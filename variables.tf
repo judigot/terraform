@@ -7,8 +7,8 @@ Create these files to override the default variables:
 
 variable "instance_type" {
   type = string
-  default = "t2.micro"
-  # default = "c5ad.large"
+  # default = "t2.micro"
+  default = "c5ad.large"
 }
 
 variable "username" {
