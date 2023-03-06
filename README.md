@@ -2,6 +2,10 @@
 
 [www.youtube.com/watch?v=iRaai1IBlB0](https://www.youtube.com/watch?v=iRaai1IBlB0)
 
+# Description
+
+AWS EC2 instance pre-installed with Docker
+
 # Set up
 1. Add a credentials file and place it in C:/Users/**username**/.aws
     ```

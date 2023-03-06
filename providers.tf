@@ -12,7 +12,7 @@ provider "aws" {
   region = "us-west-2"
   shared_config_files      = ["~/.aws/conf"]
   shared_credentials_files = ["~/.aws/credentials"]
-  profile                  = "default" # [default] profile name contained in ~/.aws/credentials
+  profile                  = "admin" # [default] profile name contained in ~/.aws/credentials
 }
 
 # Create a VPC

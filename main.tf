@@ -9,7 +9,7 @@ resource "aws_vpc" "main" {
   }
 }
 
-resource "aws_subnet" "mtc_public_subnet" {
+resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
@@ -21,7 +21,7 @@ resource "aws_subnet" "mtc_public_subnet" {
 
 }
 
-resource "aws_internet_gateway" "mtc_internet_gateway" {
+resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.main.id
 
   tags = {
@@ -29,7 +29,7 @@ resource "aws_internet_gateway" "mtc_internet_gateway" {
   }
 }
 
-resource "aws_route_table" "mtc_public_rt" {
+resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.main.id
 
   tags = {
@@ -38,19 +38,19 @@ resource "aws_route_table" "mtc_public_rt" {
 }
 
 resource "aws_route" "default_route" {
-  route_table_id         = aws_route_table.mtc_public_rt.id
+  route_table_id         = aws_route_table.public_rt.id
   destination_cidr_block = "0.0.0.0/0" # All IP addresses will hit this gateway
-  gateway_id             = aws_internet_gateway.mtc_internet_gateway.id
+  gateway_id             = aws_internet_gateway.internet_gateway.id
 }
 
-resource "aws_route_table_association" "mtc_public_assoc" {
-  subnet_id      = aws_subnet.mtc_public_subnet.id
-  route_table_id = aws_route_table.mtc_public_rt.id
+resource "aws_route_table_association" "public_assoc" {
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_security_group" "mtc_sg" {
+resource "aws_security_group" "sg" {
   vpc_id      = aws_vpc.main.id
-  name        = "dev_sg" # Optional
+  # name        = "dev_sg" # Optional
   description = "Dev security group"
 
   ingress = [{
@@ -79,23 +79,23 @@ resource "aws_security_group" "mtc_sg" {
 
 }
 
-resource "aws_key_pair" "mtc_auth" {
+resource "aws_key_pair" "auth" {
   key_name   = var.ssh_key_name
   public_key = file("~/.ssh/${var.ssh_key_name}.pub")
 }
 
-resource "aws_instance" "dev_node" {
+resource "aws_instance" "dev_server" {
   instance_type = var.instance_type
   ami           = data.aws_ami.server_ami.id
 
   # SSH Key
-  key_name = aws_key_pair.mtc_auth.key_name # ID/Keyname
+  key_name = aws_key_pair.auth.key_name # ID/Keyname
 
   # Security Group
-  vpc_security_group_ids = [aws_security_group.mtc_sg.id]
+  vpc_security_group_ids = [aws_security_group.sg.id]
 
   # Subnet ID
-  subnet_id = aws_subnet.mtc_public_subnet.id
+  subnet_id = aws_subnet.public_subnet.id
 
   # Override the default drive size
   root_block_device {
@@ -103,7 +103,7 @@ resource "aws_instance" "dev_node" {
   }
 
   tags = {
-    "Name" = "dev-node"
+    "Name" = "Development Server"
   }
 
   #==========PROJECT BOOTSTRAPPING==========#
