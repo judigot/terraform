@@ -1,7 +1,9 @@
+# Tutorial
+
 [www.youtube.com/watch?v=iRaai1IBlB0](https://www.youtube.com/watch?v=iRaai1IBlB0)
 
 # Set up
-1. Add a credentials file and place put it in C:\Users\<user-name>\.aws
+1. Add a credentials file and place it in C:/Users/**username**/.aws
     ```
     # AWS credentials file used by AWS CLI, SDKs, and tools.
     # Created by AWS Toolkit for VS Code. https://aws.amazon.com/visualstudiocode/
