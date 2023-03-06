@@ -124,3 +124,9 @@ resource "aws_instance" "dev_server" {
     interpreter = var.host_os == "linux" ? ["bash", "-c"] : ["Powershell", "-Command"]
   }
 }
+
+# Add an Elastic IP to instance
+resource "aws_eip" "lb" {
+  instance = aws_instance.dev_server.id
+  vpc      = true
+}
