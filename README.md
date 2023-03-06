@@ -15,11 +15,11 @@
 
     [default]
     # This key identifies your AWS account.
-    aws_access_key_id = AKIAWABH5MA1A1A1A1A1
+    aws_access_key_id = AKIAWSAMPLEACCESSKEY
     # Treat this secret key like a password. Never share it or store it in source
     # control. If your secret key is ever disclosed, immediately use IAM to delete
     # the key pair and create a new one.
-    aws_secret_access_key = fS/6JCjsmikr8sd3BmfiSDuK+n/fvBPaVWX5asdV
+    aws_secret_access_key = fS/SAMPLESECRETKEYfiSDuK+n/fvBPaVWX5asdV
     ```
 
 2. Reference it in **providers.tf**
