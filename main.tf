@@ -117,7 +117,7 @@ resource "aws_instance" "dev_server" {
   provisioner "local-exec" {
     # Add EC2 instance to SSH configuration
     command = templatefile("ssh-config-${var.host_os}.tpl", {
-      hostname     = self.public_ip,
+      hostname     = self.public_ip, # If you already have a domain name mapped to an IP address, you can use it here
       user         = var.username,
       identityfile = "~/.ssh/${var.ssh_key_name}"
     })
