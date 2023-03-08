@@ -4,11 +4,11 @@ data "aws_ami" "ubuntu18" {
 
   filter {
     name   = "image-id"
-    values = ["ami-0a97be4c4be6d6cc4"]
+    values = ["ami-0735c191cf914754d"]
   }
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"] # * to use the latest
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"] # * to use the latest
   }
 }

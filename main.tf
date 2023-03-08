@@ -111,8 +111,13 @@ resource "aws_instance" "dev_server" {
   user_data = file("docker.tpl")
   #=====DOCKER=====#
   #==========PROJECT BOOTSTRAPPING==========#
-  
-  
+}
+
+# Add an Elastic IP to instance
+resource "aws_eip" "ip_address" {
+  instance = aws_instance.dev_server.id
+  vpc      = true
+
   # Run commands in the host machine after creating the instance
   provisioner "local-exec" {
     # Add EC2 instance to SSH configuration
@@ -123,10 +128,4 @@ resource "aws_instance" "dev_server" {
     })
     interpreter = var.host_os == "linux" ? ["bash", "-c"] : ["Powershell", "-Command"]
   }
-}
-
-# Add an Elastic IP to instance
-resource "aws_eip" "lb" {
-  instance = aws_instance.dev_server.id
-  vpc      = true
 }
