@@ -86,7 +86,7 @@ resource "aws_key_pair" "auth" {
 
 resource "aws_instance" "dev_server" {
   instance_type = var.instance_type
-  ami           = data.aws_ami.server_ami.id
+  ami           = data.aws_ami.ubuntu18.id
 
   # SSH Key
   key_name = aws_key_pair.auth.key_name # ID/Keyname
