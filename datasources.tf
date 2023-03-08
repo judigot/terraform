@@ -1,4 +1,4 @@
-data "aws_ami" "ubuntu18" {
+data "aws_ami" "ubuntu-2204" {
   most_recent = true
   owners      = ["099720109477"]
 
