@@ -88,6 +88,8 @@ resource "aws_instance" "dev_server" {
   instance_type = var.instance_type
   ami           = data.aws_ami.ubuntu-2204.id
 
+  # count = 1
+
   # SSH Key
   key_name = aws_key_pair.auth.key_name # ID/Keyname
 
@@ -99,7 +101,7 @@ resource "aws_instance" "dev_server" {
 
   # Override the default drive size
   root_block_device {
-    volume_size = 10 # GB
+    volume_size = var.disk_size # GB
   }
 
   tags = {
