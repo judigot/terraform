@@ -32,7 +32,7 @@ variable "region" {
 
 variable "ssh_key_name" {
   type = string
-  default = "judigot"
+  default = "id_rsa"
 }
 
 variable "host_os" {
