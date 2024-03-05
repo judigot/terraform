@@ -1,3 +1,4 @@
+ssh_symlink
 # Local .terraform directories
 **/.terraform/*
 

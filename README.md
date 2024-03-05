@@ -39,3 +39,7 @@ AWS EC2 instance pre-installed with Docker
         profile                  = "default" # [default] profile name contained in ~/.aws/credentials
     }
     ```
+
+3. Project Bootstrapping
+
+    The `bootstrap.sh` script automates initial setup and configuration tasks on EC2 instances, ensuring consistent and efficient environment preparation following instance launch.
