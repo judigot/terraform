@@ -49,29 +49,29 @@
 #   }
 # }
 
-resource "aws_db_instance" "myrds" {
-    identifier          = "mysql"
-    engine              = "mysql"
-    engine_version      = "8.0.32"
-    username            = "root"
-    password            = "password"
-    allocated_storage   = 20
-    max_allocated_storage = 100 # Storage autoscaling (optional)
+# resource "aws_db_instance" "myrds" {
+#     identifier          = "mysql"
+#     engine              = "mysql"
+#     engine_version      = "8.0.32"
+#     username            = "root"
+#     password            = "password"
+#     allocated_storage   = 20
+#     max_allocated_storage = 100 # Storage autoscaling (optional)
 
-    storage_type        = "gp2" # SSD
-    instance_class      = "db.t4g.micro"
-    # storage_type        = "io1" # SSD
-    # instance_class      = "db.m5d.large"
+#     storage_type        = "gp2" # SSD
+#     instance_class      = "db.t4g.micro"
+#     # storage_type        = "io1" # SSD
+#     # instance_class      = "db.m5d.large"
 
-    multi_az = false
-    # vpc_security_group_ids = [aws_security_group.sg.id]
-    # db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name
-    db_name = "dbname"
+#     multi_az = false
+#     # vpc_security_group_ids = [aws_security_group.sg.id]
+#     # db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name
+#     db_name = "dbname"
 
-    publicly_accessible = true
-    skip_final_snapshot = true
+#     publicly_accessible = true
+#     skip_final_snapshot = true
 
-    tags = {
-        Name = "MySQL"
-    }
- }
+#     tags = {
+#         Name = "MySQL"
+#     }
+#  }
