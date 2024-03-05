@@ -1,0 +1,13 @@
+{
+    "name": "terraform",
+    "version": "1.0.0",
+    "description": "App",
+    "main": "index.js",
+    "scripts": {
+      "start": "terraform init && terraform apply -auto-approve"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+  }
+  
