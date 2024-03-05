@@ -4,7 +4,9 @@
     "description": "App",
     "main": "index.js",
     "scripts": {
-      "start": "terraform init && terraform apply -auto-approve"
+      "start": "terraform init && terraform apply -auto-approve",
+      "plan": "terraform init && terraform plan",
+      "destroy": "terraform init && terraform destroy -auto-approve"
     },
     "keywords": [],
     "author": "",
