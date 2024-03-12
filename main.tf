@@ -170,7 +170,7 @@ resource "aws_instance" "dev_server" {
 # Add an Elastic IP to instance
 resource "aws_eip" "ip_address" {
   instance = aws_instance.dev_server.id
-  vpc      = true
+  domain      = "vpc"
 
   # Run commands in the host machine after creating the instance
   provisioner "local-exec" {
