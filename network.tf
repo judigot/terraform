@@ -9,20 +9,8 @@ resource "aws_vpc" "main" {
   }
 }
 
-resource "aws_subnet" "public_subnet" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
-  map_public_ip_on_launch = true
-  availability_zone       = "${var.region}a"
-
-  tags = {
-    Name = "dev-public"
-  }
-
-}
-
 resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.main.id  // Attach IGW to the VPC for internet access.
 
   tags = {
     Name = "dev-igw"
@@ -30,22 +18,67 @@ resource "aws_internet_gateway" "internet_gateway" {
 }
 
 resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.main.id  // Associate the route table with our VPC.
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.internet_gateway.id  // Directs traffic to the IGW.
+  }
+
+  # Route for directing internal VPC traffic.
+  route {
+    cidr_block = "10.0.0.0/16"
+    gateway_id = "local"  // Uses 'local' to keep traffic within the VPC.
+  }
+
+  # Route for directing internet-bound traffic out through the Internet Gateway.
+  
 
   tags = {
-    Name = "dev_public_rt"
+    Name = "public_rt"
   }
 }
 
-resource "aws_route" "default_route" {
-  route_table_id         = aws_route_table.public_rt.id
-  destination_cidr_block = "0.0.0.0/0" # All IP addresses will hit this gateway
-  gateway_id             = aws_internet_gateway.internet_gateway.id
+resource "aws_subnet" "public_subnet_1" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
+  availability_zone       = "${var.region}a" // Specify AZ if needed, uncomment as necessary.
+
+  tags = {
+    Name = "dev-public"
+  }
 }
 
-resource "aws_route_table_association" "public_assoc" {
-  subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = aws_route_table.public_rt.id
+# Associate the custom route table with our public subnets to enable internet access.
+resource "aws_route_table_association" "public_rt_assoc_1" {
+  subnet_id      = aws_subnet.public_subnet_1.id
+  route_table_id = aws_route_table.public_rt.id  // Links Subnet 1 with our route table.
+}
+
+resource "aws_subnet" "public_subnet_2" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.2.0/24"
+  map_public_ip_on_launch = true
+  availability_zone       = "${var.region}b" // Specify AZ if needed, uncomment as necessary.
+
+  tags = {
+    Name = "dev-public"
+  }
+}
+
+resource "aws_route_table_association" "public_rt_assoc_2" {
+  subnet_id      = aws_subnet.public_subnet_2.id
+  route_table_id = aws_route_table.public_rt.id  // Links Subnet 2 with our route table.
+}
+
+resource "aws_db_subnet_group" "db_subnet_group" {
+  name       = "main"
+  subnet_ids = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]  // Groups our subnets for the RDS instance.
+
+  tags = {
+    Name = "Database subnet group"
+  }
 }
 
 resource "aws_security_group" "sg" {

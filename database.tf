@@ -1,87 +1,7 @@
-resource "aws_vpc" "db_vpc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-  tags = {
-    Name = "dev"
-  }
-}
-
-resource "aws_subnet" "public_subnet_2" {
-  vpc_id                  = aws_vpc.db_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  map_public_ip_on_launch = true
-  availability_zone       = "${var.region}a" // Specify AZ if needed, uncomment as necessary.
-
-  tags = {
-    Name = "dev-public"
-  }
-}
-
-resource "aws_subnet" "public_subnet_3" {
-  vpc_id                  = aws_vpc.db_vpc.id
-  cidr_block              = "10.0.2.0/24"
-  map_public_ip_on_launch = true
-  availability_zone       = "${var.region}b" // Specify AZ if needed, uncomment as necessary.
-
-  tags = {
-    Name = "dev-public"
-  }
-}
-
-resource "aws_internet_gateway" "internet_gateway_db" {
-  vpc_id = aws_vpc.db_vpc.id  // Attach IGW to the VPC for internet access.
-
-  tags = {
-    Name = "db-igw"
-  }
-}
-
-# Define a route table for managing traffic within the VPC and for internet-bound traffic.
-resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.db_vpc.id  // Associate the route table with our VPC.
-
-  # Route for directing internal VPC traffic.
-  route {
-    cidr_block = "10.0.0.0/16"
-    gateway_id = "local"  // Uses 'local' to keep traffic within the VPC.
-  }
-
-  # Route for directing internet-bound traffic out through the Internet Gateway.
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway_db.id  // Directs traffic to the IGW.
-  }
-
-  tags = {
-    Name = "public_route_table"
-  }
-}
-
-# Associate the custom route table with our public subnets to enable internet access.
-resource "aws_route_table_association" "public_route_table_assoc_2" {
-  subnet_id      = aws_subnet.public_subnet_2.id
-  route_table_id = aws_route_table.public_route_table.id  // Links Subnet 2 with our route table.
-}
-
-resource "aws_route_table_association" "public_route_table_assoc_3" {
-  subnet_id      = aws_subnet.public_subnet_3.id
-  route_table_id = aws_route_table.public_route_table.id  // Links Subnet 3 with our route table.
-}
-
-resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = "main"
-  subnet_ids = [aws_subnet.public_subnet_2.id, aws_subnet.public_subnet_3.id]  // Groups our subnets for the RDS instance.
-
-  tags = {
-    Name = "Database subnet group"
-  }
-}
-
 resource "aws_security_group" "rds_sg" {
   name        = "rds-database-sg"
   description = "Security group for RDS database instance"
-  vpc_id      = aws_vpc.db_vpc.id  // Ensure the SG is within our VPC.
+  vpc_id      = aws_vpc.main.id  // Ensure the SG is within our VPC.
 
   ingress {
     from_port   = 5432
@@ -105,7 +25,7 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-resource "aws_db_instance" "myrds" {
+resource "aws_db_instance" "database" {
 
   identifier              = "postgres"
   engine                  = "postgres"
