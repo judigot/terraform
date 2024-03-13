@@ -1,196 +1,115 @@
-# Create a VPC (Virtual Private Cloud)
-resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  enable_dns_support   = true
+# resource "aws_key_pair" "auth" {
+#   key_name   = var.ssh_key_name
+#   public_key = file("~/.ssh/${var.ssh_key_name}.pub")
+# }
 
-  tags = {
-    Name = "dev"
-  }
-}
+# resource "null_resource" "create_ssh_symlink" {
+#   triggers = {
+#     always_run = "${timestamp()}"
+#   }
 
-resource "aws_subnet" "public_subnet" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
-  map_public_ip_on_launch = true
-  availability_zone       = "us-west-2a"
+#   provisioner "local-exec" {
+#   command = <<-EOT
+#     [ -d "${var.ssh_symlink}" ] && rm -rf "${var.ssh_symlink}"
+#     if command -v uname > /dev/null; then
+#       # Assume Unix-like OS
+#       if [ ! -L "${path.module}/${var.ssh_symlink}" ]; then
+#         ln -sfn "$HOME/.ssh" "${path.module}/${var.ssh_symlink}"
+#       fi
+#     else
+#       # Assume Windows
+#       powershell.exe -Command "if (!(Test-Path -PathType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}')) { New-Item -ItemType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}' -Target '$env:USERPROFILE\\.ssh' }"
+#     fi
+#   EOT
+#   interpreter = ["bash", "-c"]
+# }
 
-  tags = {
-    Name = "dev-public"
-  }
+# }
 
-}
+# resource "aws_instance" "dev_server" {
+#   instance_type = var.instance_type
+#   ami           = data.aws_ami.ubuntu-2204.id
 
-resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = aws_vpc.main.id
+#   # count = 1
 
-  tags = {
-    Name = "dev-igw"
-  }
-}
+#   # SSH Key
+#   key_name = aws_key_pair.auth.key_name # ID/Keyname
 
-resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.main.id
+#   # Security Group
+#   vpc_security_group_ids = [aws_security_group.sg.id]
 
-  tags = {
-    Name = "dev_public_rt"
-  }
-}
+#   # Subnet ID
+#   subnet_id = aws_subnet.public_subnet.id
 
-resource "aws_route" "default_route" {
-  route_table_id         = aws_route_table.public_rt.id
-  destination_cidr_block = "0.0.0.0/0" # All IP addresses will hit this gateway
-  gateway_id             = aws_internet_gateway.internet_gateway.id
-}
+#   # Override the default drive size
+#   root_block_device {
+#     volume_size = var.disk_size # GB
+#   }
 
-resource "aws_route_table_association" "public_assoc" {
-  subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = aws_route_table.public_rt.id
-}
+#   tags = {
+#     "Name" = "Development Server"
+#   }
 
-resource "aws_security_group" "sg" {
-  vpc_id      = aws_vpc.main.id
-  # name        = "dev_sg" # Optional
-  description = "Dev security group"
+#   #==========PROJECT BOOTSTRAPPING==========#
+#   #=====DOCKER=====#
+#   user_data = file("user_data.sh")
+#   #=====DOCKER=====#
+#   #==========PROJECT BOOTSTRAPPING==========#
 
-  ingress = [{
-    cidr_blocks      = ["0.0.0.0/0"] # Can have multiple IPs
-    description      = ""            # Required
-    from_port        = 0
-    ipv6_cidr_blocks = [] # Required
-    prefix_list_ids  = [] # Required
-    protocol         = "-1"
-    security_groups  = [] # Required
-    self             = false
-    to_port          = 0
-  }]
+#   #==========POST-BUILD SCRIPT==========#
+#   provisioner "file" {
+#     source = "${path.module}/${var.initial_script}.sh"
+#     destination = "/home/ubuntu/${var.initial_script}.sh"
 
-  egress = [{
-    cidr_blocks      = ["0.0.0.0/0"] # Can have multiple IPs
-    description      = ""            # Required
-    from_port        = 0
-    ipv6_cidr_blocks = [] # Required
-    prefix_list_ids  = [] # Required
-    protocol         = "-1"
-    security_groups  = [] # Required
-    self             = false
-    to_port          = 0
-  }]
+#     connection {
+#       type        = "ssh"
+#       user        = var.username
+#       private_key = file("${path.module}/${var.ssh_symlink}/${var.ssh_key_name}")
+#       host        = self.public_ip
+#     }
+#   }
 
-}
+#   provisioner "remote-exec" {
+#     on_failure = continue
 
-resource "aws_key_pair" "auth" {
-  key_name   = var.ssh_key_name
-  public_key = file("~/.ssh/${var.ssh_key_name}.pub")
-}
+#     inline = [
+#       "cd /home/ubuntu",
+#       # "chmod +x /tmp/${var.initial_script}.sh",
+#       "sh ${var.initial_script}.sh"
+#       # "sudo sh /home/ubuntu/${var.initial_script}.sh"
+#     ]
 
-resource "null_resource" "create_ssh_symlink" {
-  triggers = {
-    always_run = "${timestamp()}"
-  }
+#     connection {
+#       type        = "ssh"
+#       user        = var.username
+#       private_key = file("${path.module}/${var.ssh_symlink}/${var.ssh_key_name}")
+#       host        = self.public_ip
+#     }
+#   }
+#   #==========POST-BUILD SCRIPT==========#
+# }
 
-  provisioner "local-exec" {
-  command = <<-EOT
-    [ -d "${var.ssh_symlink}" ] && rm -rf "${var.ssh_symlink}"
-    if command -v uname > /dev/null; then
-      # Assume Unix-like OS
-      if [ ! -L "${path.module}/${var.ssh_symlink}" ]; then
-        ln -sfn "$HOME/.ssh" "${path.module}/${var.ssh_symlink}"
-      fi
-    else
-      # Assume Windows
-      powershell.exe -Command "if (!(Test-Path -PathType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}')) { New-Item -ItemType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}' -Target '$env:USERPROFILE\\.ssh' }"
-    fi
-  EOT
-  interpreter = ["bash", "-c"]
-}
+# # Add an Elastic IP to instance
+# resource "aws_eip" "ip_address" {
+#   instance = aws_instance.dev_server.id
+#   domain   = "vpc"
+# }
 
-}
+# resource "null_resource" "setup_ssh_config" {
+#   # Ensures this runs after the EIP is associated
+#   depends_on = [aws_eip.ip_address]
 
-resource "aws_instance" "dev_server" {
-  instance_type = var.instance_type
-  ami           = data.aws_ami.ubuntu-2204.id
+#   # Optionally, use triggers to control when the provisioner should run
+#   triggers = {
+#     eip_address = aws_eip.ip_address.public_ip
+#   }
 
-  # count = 1
-
-  # SSH Key
-  key_name = aws_key_pair.auth.key_name # ID/Keyname
-
-  # Security Group
-  vpc_security_group_ids = [aws_security_group.sg.id]
-
-  # Subnet ID
-  subnet_id = aws_subnet.public_subnet.id
-
-  # Override the default drive size
-  root_block_device {
-    volume_size = var.disk_size # GB
-  }
-
-  tags = {
-    "Name" = "Development Server"
-  }
-
-  #==========PROJECT BOOTSTRAPPING==========#
-  #=====DOCKER=====#
-  user_data = file("user_data.sh")
-  #=====DOCKER=====#
-  #==========PROJECT BOOTSTRAPPING==========#
-
-  #==========POST-BUILD SCRIPT==========#
-  provisioner "file" {
-    source = "${path.module}/${var.initial_script}.sh"
-    destination = "/home/ubuntu/${var.initial_script}.sh"
-
-    connection {
-      type        = "ssh"
-      user        = var.username
-      private_key = file("${path.module}/${var.ssh_symlink}/${var.ssh_key_name}")
-      host        = self.public_ip
-    }
-  }
-
-  provisioner "remote-exec" {
-    on_failure = continue
-
-    inline = [
-      "cd /home/ubuntu",
-      # "chmod +x /tmp/${var.initial_script}.sh",
-      "sh ${var.initial_script}.sh"
-      # "sudo sh /home/ubuntu/${var.initial_script}.sh"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = var.username
-      private_key = file("${path.module}/${var.ssh_symlink}/${var.ssh_key_name}")
-      host        = self.public_ip
-    }
-  }
-  #==========POST-BUILD SCRIPT==========#
-}
-
-# Add an Elastic IP to instance
-resource "aws_eip" "ip_address" {
-  instance = aws_instance.dev_server.id
-  domain   = "vpc"
-}
-
-resource "null_resource" "setup_ssh_config" {
-  # Ensures this runs after the EIP is associated
-  depends_on = [aws_eip.ip_address]
-
-  # Optionally, use triggers to control when the provisioner should run
-  triggers = {
-    eip_address = aws_eip.ip_address.public_ip
-  }
-
-  provisioner "local-exec" {
-    command = templatefile("ssh-config-${var.host_os}.tpl", {
-      hostname     = aws_eip.ip_address.public_ip,
-      user         = var.username,
-      identityfile = "~/.ssh/${var.ssh_key_name}"
-    })
-    interpreter = var.host_os == "linux" ? ["bash", "-c"] : ["Powershell", "-Command"]
-  }
-}
+#   provisioner "local-exec" {
+#     command = templatefile("ssh-config-${var.host_os}.tpl", {
+#       hostname     = aws_eip.ip_address.public_ip,
+#       user         = var.username,
+#       identityfile = "~/.ssh/${var.ssh_key_name}"
+#     })
+#     interpreter = var.host_os == "linux" ? ["bash", "-c"] : ["Powershell", "-Command"]
+#   }
+# }
