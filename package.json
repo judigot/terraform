@@ -4,9 +4,10 @@
     "description": "App",
     "main": "index.js",
     "scripts": {
-      "start": "terraform init && terraform apply -auto-approve",
-      "plan": "terraform init && terraform plan",
-      "destroy": "terraform init && terraform destroy -auto-approve"
+      "init": "terraform init",
+      "start": "terraform apply -auto-approve",
+      "plan": "terraform plan",
+      "destroy": "terraform destroy -auto-approve"
     },
     "keywords": [],
     "author": "",
