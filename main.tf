@@ -64,24 +64,54 @@ resource "aws_instance" "app_server" {
   
 }
 
+# resource "null_resource" "setup_ssh_config" {
+#   # Ensures this runs after the EIP is associated
+#   depends_on = [aws_instance.app_server]
+
+#   # Optionally, use triggers to control when the provisioner should run
+#   triggers = {
+#     ip_address = aws_instance.app_server.public_ip
+#   }
+
+#   provisioner "local-exec" {
+#     command = templatefile("ssh-config-${var.host_os}.tpl", {
+#       hostname     = aws_instance.app_server.public_ip,
+#       user         = var.username,
+#       identityfile = "~/.ssh/${var.ssh_key_name}"
+#     })
+#     interpreter = var.host_os == "linux" ? ["bash", "-c"] : ["Powershell", "-Command"]
+#   }
+# }
+
 resource "null_resource" "setup_ssh_config" {
-  # Ensures this runs after the EIP is associated
   depends_on = [aws_instance.app_server]
 
-  # Optionally, use triggers to control when the provisioner should run
   triggers = {
     ip_address = aws_instance.app_server.public_ip
   }
 
   provisioner "local-exec" {
-    command = templatefile("ssh-config-${var.host_os}.tpl", {
-      hostname     = aws_instance.app_server.public_ip,
-      user         = var.username,
-      identityfile = "~/.ssh/${var.ssh_key_name}"
-    })
-    interpreter = var.host_os == "linux" ? ["bash", "-c"] : ["Powershell", "-Command"]
+    /* 
+     * The command uses a shell conditional to check if the OS is Windows.
+     * It uses 'uname' to get the OS name and 'grep' to look for a Windows identifier.
+     * If the condition is met (indicating we're on Windows), it executes the template file command.
+     * Otherwise, it simply echoes 'Not on Windows', effectively skipping the operation.
+     */
+    command = <<EOT
+if uname -s | grep -iq 'mingw\|cygwin\|msys'; then
+  Powershell -Command ${templatefile("ssh-config-windows.tpl", {
+    hostname     = aws_instance.app_server.public_ip,
+    user         = var.username,
+    identityfile = "~/.ssh/${var.ssh_key_name}"
+  })}
+else
+  echo 'Not running on Windows. Skipping SSH config setup.'
+fi
+EOT
+    interpreter = ["bash", "-c"]
   }
 }
+
 
 resource "null_resource" "open_remote_connection" {
   # Ensures this runs after the EIP is associated
