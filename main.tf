@@ -108,6 +108,7 @@ else
   echo 'Not running on Windows. Skipping SSH config setup.'
 fi
 EOT
+
     interpreter = ["bash", "-c"]
   }
 }
@@ -125,6 +126,17 @@ resource "null_resource" "open_remote_connection" {
   }
 
   provisioner "local-exec" {
-        command = "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
+    # command = "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
+
+    command = <<EOT
+if uname -s | grep -iq 'mingw\|cygwin\|msys'; then
+  Powershell -Command code --remote ssh-remote+${var.username}@${self.triggers.ip_address}
+else
+  ssh -i ~/.ssh/id_rsa ${var.username}@${self.triggers.ip_address}
+  echo 'Not running on Windows. Skipping SSH config setup.'
+fi
+EOT
+
+    interpreter = ["bash", "-c"]
   }
 }
