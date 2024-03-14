@@ -25,15 +25,6 @@ resource "aws_route_table" "public_rt" {
     gateway_id = aws_internet_gateway.internet_gateway.id  // Directs traffic to the IGW.
   }
 
-  # Route for directing internal VPC traffic.
-  route {
-    cidr_block = "10.0.0.0/16"
-    gateway_id = "local"  // Uses 'local' to keep traffic within the VPC.
-  }
-
-  # Route for directing internet-bound traffic out through the Internet Gateway.
-  
-
   tags = {
     Name = "public_rt"
   }
