@@ -40,11 +40,6 @@ variable "host_os" {
   default = "windows"
 }
 
-variable "ssh_symlink" {
-  type        = string
-  default     = "ssh_symlink"
-}
-
 variable "initial_script" {
   type        = string
   default     = "bootstrap"

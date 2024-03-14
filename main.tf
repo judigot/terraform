@@ -3,28 +3,6 @@ resource "aws_key_pair" "auth" {
   public_key = file("~/.ssh/${var.ssh_key_name}.pub")
 }
 
-resource "null_resource" "create_ssh_symlink" {
-  triggers = {
-    always_run = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      [ -d "${var.ssh_symlink}" ] && rm -rf "${var.ssh_symlink}"
-      if command -v uname > /dev/null; then
-        # Assume Unix-like OS
-        if [ ! -L "${path.module}/${var.ssh_symlink}" ]; then
-          ln -sfn "$HOME/.ssh" "${path.module}/${var.ssh_symlink}"
-        fi
-      else
-        # Assume Windows
-        powershell.exe -Command "if (!(Test-Path -PathType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}')) { New-Item -ItemType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}' -Target '$env:USERPROFILE\\.ssh' }"
-      fi
-    EOT
-    interpreter = ["bash", "-c"]
-  }
-}
-
 resource "aws_instance" "dev_server" {
   instance_type = var.instance_type
   ami           = data.aws_ami.ubuntu-2204.id
@@ -63,7 +41,7 @@ resource "aws_instance" "dev_server" {
     connection {
       type        = "ssh"
       user        = var.username
-      private_key = file("${path.module}/${var.ssh_symlink}/${var.ssh_key_name}")
+      private_key = file("~/.ssh/${var.ssh_key_name}")
       host        = self.public_ip
     }
   }
@@ -81,7 +59,7 @@ resource "aws_instance" "dev_server" {
     connection {
       type        = "ssh"
       user        = var.username
-      private_key = file("${path.module}/${var.ssh_symlink}/${var.ssh_key_name}")
+      private_key = file("~/.ssh/${var.ssh_key_name}")
       host        = self.public_ip
     }
   }

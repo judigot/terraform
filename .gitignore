@@ -1,4 +1,3 @@
-ssh_symlink
 .terraform.lock.hcl
 
 # Local .terraform directories
