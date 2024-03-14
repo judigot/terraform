@@ -128,13 +128,11 @@ resource "null_resource" "open_remote_connection" {
   provisioner "local-exec" {
     # command = "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
 
-    # ssh -i ~/.ssh/id_rsa ${var.username}@${self.triggers.ip_address}
-
     command = <<EOT
 if uname -s | grep -iq 'mingw\|cygwin\|msys'; then
-  Powershell -Command code --remote ssh-remote+${var.username}@${self.triggers.ip_address}
+  Powershell -Command "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
 else
-  ssh-keyscan -H ${aws_instance.app_server.public_ip} >> ~/.ssh/known_hosts && ssh -i ~/.ssh/${var.ssh_key_name} ${var.username}@${self.triggers.ip_address}
+  echo "ssh -i ~/.ssh/${var.ssh_key_name} ${var.username}@${self.triggers.ip_address}"
 fi
 EOT
 
