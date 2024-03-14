@@ -12,7 +12,7 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = aws_vpc.main.id  // Attach IGW to the VPC for internet access.
+  vpc_id = aws_vpc.main.id // Attach IGW to the VPC for internet access.
 
   tags = {
     Name = "dev-igw"
@@ -20,11 +20,11 @@ resource "aws_internet_gateway" "internet_gateway" {
 }
 
 resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.main.id  // Associate the route table with our VPC.
+  vpc_id = aws_vpc.main.id // Associate the route table with our VPC.
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway.id  // Directs traffic to the IGW.
+    gateway_id = aws_internet_gateway.internet_gateway.id // Directs traffic to the IGW.
   }
 
   tags = {
@@ -46,7 +46,7 @@ resource "aws_subnet" "public_subnet_1" {
 # Associate the custom route table with our public subnets to enable internet access.
 resource "aws_route_table_association" "public_rt_assoc_1" {
   subnet_id      = aws_subnet.public_subnet_1.id
-  route_table_id = aws_route_table.public_rt.id  // Links Subnet 1 with our route table.
+  route_table_id = aws_route_table.public_rt.id // Links Subnet 1 with our route table.
 }
 
 resource "aws_subnet" "public_subnet_2" {
@@ -62,12 +62,12 @@ resource "aws_subnet" "public_subnet_2" {
 
 resource "aws_route_table_association" "public_rt_assoc_2" {
   subnet_id      = aws_subnet.public_subnet_2.id
-  route_table_id = aws_route_table.public_rt.id  // Links Subnet 2 with our route table.
+  route_table_id = aws_route_table.public_rt.id // Links Subnet 2 with our route table.
 }
 
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "main"
-  subnet_ids = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]  // Groups our subnets for the RDS instance.
+  subnet_ids = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id] // Groups our subnets for the RDS instance.
 
   tags = {
     Name = "Database subnet group"
@@ -75,7 +75,7 @@ resource "aws_db_subnet_group" "db_subnet_group" {
 }
 
 resource "aws_security_group" "sg" {
-  vpc_id      = aws_vpc.main.id
+  vpc_id = aws_vpc.main.id
   # name        = "dev_sg" # Optional
   description = "Dev security group"
 
@@ -87,9 +87,9 @@ resource "aws_security_group" "sg" {
       cidr_blocks      = ["0.0.0.0/0"] # Replace with your IP/range
       self             = false
       description      = "SSH" # Required
-      security_groups  = [] # Required
-      ipv6_cidr_blocks = [] # Required
-      prefix_list_ids  = [] # Required
+      security_groups  = []    # Required
+      ipv6_cidr_blocks = []    # Required
+      prefix_list_ids  = []    # Required
     },
     {
       from_port        = 80
@@ -98,9 +98,9 @@ resource "aws_security_group" "sg" {
       cidr_blocks      = ["0.0.0.0/0"]
       self             = false
       description      = "HTTP" # Required
-      security_groups  = [] # Required
-      ipv6_cidr_blocks = [] # Required
-      prefix_list_ids  = [] # Required
+      security_groups  = []     # Required
+      ipv6_cidr_blocks = []     # Required
+      prefix_list_ids  = []     # Required
     },
     {
       from_port        = 443
@@ -109,9 +109,9 @@ resource "aws_security_group" "sg" {
       cidr_blocks      = ["0.0.0.0/0"]
       self             = false
       description      = "HTTPS" # Required
-      security_groups  = [] # Required
-      ipv6_cidr_blocks = [] # Required
-      prefix_list_ids  = [] # Required
+      security_groups  = []      # Required
+      ipv6_cidr_blocks = []      # Required
+      prefix_list_ids  = []      # Required
     }
   ]
 

@@ -41,7 +41,7 @@ resource "aws_instance" "app_server" {
 
   #==========POST-BUILD SCRIPT==========#
   provisioner "file" {
-    source = "${path.module}/${var.initial_script}.sh"
+    source      = "${path.module}/${var.initial_script}.sh"
     destination = "/home/ubuntu/${var.initial_script}.sh"
   }
 
@@ -61,7 +61,7 @@ resource "aws_instance" "app_server" {
     ]
   }
   #==========POST-BUILD SCRIPT==========#
-  
+
 }
 
 # resource "null_resource" "setup_ssh_config" {
@@ -103,14 +103,14 @@ if uname -s | grep -iq 'mingw\\|cygwin\\|msys'; then
     hostname     = aws_instance.app_server.public_ip,
     user         = var.username,
     identityfile = "~/.ssh/${var.ssh_key_name}"
-  })}"
+})}"
 else
   echo 'Not running on Windows. Skipping SSH config setup.'
 fi
 EOT
 
-    interpreter = ["bash", "-c"]
-  }
+interpreter = ["bash", "-c"]
+}
 }
 
 

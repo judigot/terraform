@@ -6,7 +6,7 @@ Create these files to override the default variables:
 */
 
 variable "instance_type" {
-  type = string
+  type    = string
   default = "t2.micro"
 }
 variable "disk_size" {
@@ -17,32 +17,32 @@ variable "disk_size" {
 }
 
 variable "volume_type" {
-  type = string
+  type    = string
   default = "gp2"
 }
 
 variable "username" {
-  type = string
+  type    = string
   default = "ubuntu"
 }
 
 variable "region" {
-  type = string
+  type    = string
   default = "us-west-2"
   # default = "ap-southeast-1"
 }
 
 variable "ssh_key_name" {
-  type = string
+  type    = string
   default = "id_rsa"
 }
 
 variable "host_os" {
-  type = string
+  type    = string
   default = "windows"
 }
 
 variable "initial_script" {
-  type        = string
-  default     = "bootstrap"
+  type    = string
+  default = "bootstrap"
 }
