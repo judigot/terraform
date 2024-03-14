@@ -98,12 +98,12 @@ resource "null_resource" "setup_ssh_config" {
      * Otherwise, it simply echoes 'Not on Windows', effectively skipping the operation.
      */
     command = <<EOT
-if uname -s | grep -iq 'mingw\|cygwin\|msys'; then
-  Powershell -Command ${templatefile("ssh-config-windows.tpl", {
+if uname -s | grep -iq 'mingw\\|cygwin\\|msys'; then
+  Powershell -Command "${templatefile("ssh-config-windows.tpl", {
     hostname     = aws_instance.app_server.public_ip,
     user         = var.username,
     identityfile = "~/.ssh/${var.ssh_key_name}"
-  })}
+  })}"
 else
   echo 'Not running on Windows. Skipping SSH config setup.'
 fi
@@ -129,7 +129,7 @@ resource "null_resource" "open_remote_connection" {
     # command = "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
 
     command = <<EOT
-if uname -s | grep -iq 'mingw\|cygwin\|msys'; then
+if uname -s | grep -iq 'mingw\\|cygwin\\|msys'; then
   Powershell -Command "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
 else
   echo "ssh -i ~/.ssh/${var.ssh_key_name} ${var.username}@${self.triggers.ip_address}"

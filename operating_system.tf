@@ -12,3 +12,7 @@ data "aws_ami" "ubuntu-2204" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"] # * to use the latest
   }
 }
+
+data "external" "os_check" {
+  program = ["sh", "-c", "echo -n $(uname -s | grep -iq 'mingw\\|cygwin\\|msys' && echo '{\"is_windows\":\"true\"}' || echo '{\"is_windows\":\"false\"}')"]
+}
