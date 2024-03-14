@@ -1,6 +1,6 @@
 # Add an Elastic IP to instance
 # resource "aws_eip" "ip_address" {
-#   instance = aws_instance.dev_server.id
+#   instance = aws_instance.app_server.id
 #   domain   = "vpc"
 # }
 

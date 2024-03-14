@@ -3,9 +3,9 @@ resource "aws_key_pair" "auth" {
   public_key = file("~/.ssh/${var.ssh_key_name}.pub")
 }
 
-resource "aws_instance" "dev_server" {
-  instance_type = var.instance_type
+resource "aws_instance" "app_server" {
   ami           = data.aws_ami.ubuntu-2204.id
+  instance_type = var.instance_type
 
   # count = 1
 
@@ -20,11 +20,19 @@ resource "aws_instance" "dev_server" {
 
   # Override the default drive size
   root_block_device {
+    volume_type = var.volume_type
     volume_size = var.disk_size # GB
   }
 
   tags = {
     "Name" = "Development Server"
+  }
+
+  connection {
+    type        = "ssh"
+    user        = var.username
+    private_key = file("~/.ssh/${var.ssh_key_name}")
+    host        = self.public_ip
   }
 
   #==========PROJECT BOOTSTRAPPING==========#
@@ -35,13 +43,11 @@ resource "aws_instance" "dev_server" {
   provisioner "file" {
     source = "${path.module}/${var.initial_script}.sh"
     destination = "/home/ubuntu/${var.initial_script}.sh"
+  }
 
-    connection {
-      type        = "ssh"
-      user        = var.username
-      private_key = file("~/.ssh/${var.ssh_key_name}")
-      host        = self.public_ip
-    }
+  provisioner "file" {
+    source      = "${path.module}/mount"
+    destination = "/home/ubuntu/mount"
   }
 
   provisioner "remote-exec" {
@@ -53,27 +59,39 @@ resource "aws_instance" "dev_server" {
       "sh ${var.initial_script}.sh"
       # "sudo sh /home/ubuntu/${var.initial_script}.sh"
     ]
-
-    connection {
-      type        = "ssh"
-      user        = var.username
-      private_key = file("~/.ssh/${var.ssh_key_name}")
-      host        = self.public_ip
-    }
   }
   #==========POST-BUILD SCRIPT==========#
   
 }
 
+resource "null_resource" "setup_ssh_config" {
+  # Ensures this runs after the EIP is associated
+  depends_on = [aws_instance.app_server]
+
+  # Optionally, use triggers to control when the provisioner should run
+  triggers = {
+    ip_address = aws_instance.app_server.public_ip
+  }
+
+  provisioner "local-exec" {
+    command = templatefile("ssh-config-${var.host_os}.tpl", {
+      hostname     = aws_instance.app_server.public_ip,
+      user         = var.username,
+      identityfile = "~/.ssh/${var.ssh_key_name}"
+    })
+    interpreter = var.host_os == "linux" ? ["bash", "-c"] : ["Powershell", "-Command"]
+  }
+}
+
 resource "null_resource" "open_remote_connection" {
   # Ensures this runs after the EIP is associated
   # depends_on = [aws_eip.ip_address]
-  depends_on = [aws_instance.dev_server]
+  depends_on = [aws_instance.app_server]
 
   # Optionally, use triggers to control when the provisioner should run
   triggers = {
     always_run = timestamp()
-    ip_address = aws_instance.dev_server.public_ip
+    ip_address = aws_instance.app_server.public_ip
   }
 
   provisioner "local-exec" {

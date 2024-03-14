@@ -5,7 +5,10 @@
     "main": "index.js",
     "scripts": {
       "init": "terraform init",
-      "start": "terraform apply -auto-approve",
+      "dev": "terraform apply -auto-approve -var-file env.development.tfvars -target=aws_instance.app_server",
+      "dev:with-database": "terraform apply -auto-approve -var-file env.development.tfvars",
+      "prod": "terraform apply -auto-approve -var-file env.production.tfvars",
+      "prod:with-database": "terraform apply -auto-approve -var-file env.production.tfvars",
       "plan": "terraform plan",
       "destroy": "terraform destroy -auto-approve"
     },

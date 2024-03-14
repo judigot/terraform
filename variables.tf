@@ -7,17 +7,18 @@ Create these files to override the default variables:
 
 variable "instance_type" {
   type = string
-  # default = "t2.micro"
-  default = "c5ad.large"
+  default = "t2.micro"
 }
 variable "disk_size" {
   type = number
 
   # t2.micro
-  # default = 10 # GB
+  default = 10 # GB
+}
 
-  # c5ad.large
-  default = 75 # GB
+variable "volume_type" {
+  type = string
+  default = "gp2"
 }
 
 variable "username" {

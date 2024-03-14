@@ -77,17 +77,42 @@ resource "aws_security_group" "sg" {
   # name        = "dev_sg" # Optional
   description = "Dev security group"
 
-  ingress = [{
-    cidr_blocks      = ["0.0.0.0/0"] # Can have multiple IPs
-    description      = ""            # Required
-    from_port        = 0
-    ipv6_cidr_blocks = [] # Required
-    prefix_list_ids  = [] # Required
-    protocol         = "-1"
-    security_groups  = [] # Required
-    self             = false
-    to_port          = 0
-  }]
+  ingress = [
+    {
+      from_port        = 22
+      to_port          = 22
+      protocol         = "tcp"
+      cidr_blocks      = ["0.0.0.0/0"] # Replace with your IP/range
+      self             = false
+      description      = "SSH" # Required
+      security_groups  = [] # Required
+      ipv6_cidr_blocks = [] # Required
+      prefix_list_ids  = [] # Required
+    },
+    {
+      from_port        = 80
+      to_port          = 80
+      protocol         = "tcp"
+      cidr_blocks      = ["0.0.0.0/0"]
+      self             = false
+      description      = "HTTP" # Required
+      security_groups  = [] # Required
+      ipv6_cidr_blocks = [] # Required
+      prefix_list_ids  = [] # Required
+    },
+    {
+      from_port        = 443
+      to_port          = 443
+      protocol         = "tcp"
+      cidr_blocks      = ["0.0.0.0/0"]
+      self             = false
+      description      = "HTTPS" # Required
+      security_groups  = [] # Required
+      ipv6_cidr_blocks = [] # Required
+      prefix_list_ids  = [] # Required
+    }
+  ]
+
 
   egress = [{
     cidr_blocks      = ["0.0.0.0/0"] # Can have multiple IPs

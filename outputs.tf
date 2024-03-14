@@ -1,5 +1,5 @@
 output "dev_ip" {
-  value = aws_instance.dev_server.public_ip
+  value = aws_instance.app_server.public_ip
 }
 
 # output "public_ip" {
