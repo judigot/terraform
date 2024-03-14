@@ -1,4 +1,6 @@
 # Create a VPC (Virtual Private Cloud)
+# "main" is for terraform reference only and noy used anywhere in AWS
+
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true

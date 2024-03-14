@@ -14,10 +14,3 @@ provider "aws" {
   shared_credentials_files = ["~/.aws/credentials"]
   profile                  = "admin" # [default] profile name contained in ~/.aws/credentials
 }
-
-# Create a VPC
-# "main" is for terraform reference only and noy used anywhere in AWS
-# This resource can be in a separate file called main.tf
-# resource "aws_vpc" "main" {
-#   cidr_block = "10.0.0.0/16"
-# }
