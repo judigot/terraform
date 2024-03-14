@@ -9,21 +9,20 @@ resource "null_resource" "create_ssh_symlink" {
   }
 
   provisioner "local-exec" {
-  command = <<-EOT
-    [ -d "${var.ssh_symlink}" ] && rm -rf "${var.ssh_symlink}"
-    if command -v uname > /dev/null; then
-      # Assume Unix-like OS
-      if [ ! -L "${path.module}/${var.ssh_symlink}" ]; then
-        ln -sfn "$HOME/.ssh" "${path.module}/${var.ssh_symlink}"
+    command = <<-EOT
+      [ -d "${var.ssh_symlink}" ] && rm -rf "${var.ssh_symlink}"
+      if command -v uname > /dev/null; then
+        # Assume Unix-like OS
+        if [ ! -L "${path.module}/${var.ssh_symlink}" ]; then
+          ln -sfn "$HOME/.ssh" "${path.module}/${var.ssh_symlink}"
+        fi
+      else
+        # Assume Windows
+        powershell.exe -Command "if (!(Test-Path -PathType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}')) { New-Item -ItemType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}' -Target '$env:USERPROFILE\\.ssh' }"
       fi
-    else
-      # Assume Windows
-      powershell.exe -Command "if (!(Test-Path -PathType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}')) { New-Item -ItemType SymbolicLink -Path '$env:USERPROFILE\\Desktop\\${var.ssh_symlink}' -Target '$env:USERPROFILE\\.ssh' }"
-    fi
-  EOT
-  interpreter = ["bash", "-c"]
-}
-
+    EOT
+    interpreter = ["bash", "-c"]
+  }
 }
 
 resource "aws_instance" "dev_server" {
