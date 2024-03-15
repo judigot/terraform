@@ -25,7 +25,7 @@ resource "aws_instance" "app_server" {
   }
 
   tags = {
-    "Name" = "Application Server"
+    "Name" = "App Server"
   }
 
   connection {

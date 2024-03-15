@@ -65,15 +65,6 @@ resource "aws_route_table_association" "public_rt_assoc_2" {
   route_table_id = aws_route_table.public_rt.id // Links Subnet 2 with our route table.
 }
 
-resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = "sg"
-  subnet_ids = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id] // Groups our subnets for the RDS instance.
-
-  tags = {
-    Name = "Database subnet group"
-  }
-}
-
 resource "aws_security_group" "sg" {
   vpc_id = aws_vpc.main.id
   name        = "App Security Group" # Optional
@@ -86,7 +77,7 @@ resource "aws_security_group" "sg" {
       protocol         = "tcp"
       cidr_blocks      = ["0.0.0.0/0"] # Replace with your IP/range
       self             = false
-      description      = "SSH" # Required
+      description      = "SSH: Allow SSH access from any IP address. For security reasons, consider restricting this to known IP addresses or ranges." # Required
       security_groups  = []    # Required
       ipv6_cidr_blocks = []    # Required
       prefix_list_ids  = []    # Required
@@ -97,7 +88,7 @@ resource "aws_security_group" "sg" {
       protocol         = "tcp"
       cidr_blocks      = ["0.0.0.0/0"]
       self             = false
-      description      = "HTTP" # Required
+      description = "HTTP: Allow HTTP traffic from any IP address. This rule enables web traffic access to your resources. For enhanced security, consider narrowing this to trusted IP ranges." # Required
       security_groups  = []     # Required
       ipv6_cidr_blocks = []     # Required
       prefix_list_ids  = []     # Required
@@ -108,7 +99,7 @@ resource "aws_security_group" "sg" {
       protocol         = "tcp"
       cidr_blocks      = ["0.0.0.0/0"]
       self             = false
-      description      = "HTTPS" # Required
+      description = "HTTPS: Allow HTTPS traffic from any IP address. This rule is crucial for secure, encrypted web traffic access to your resources. Narrowing down to trusted IPs is advised for improved security." # Required
       security_groups  = []      # Required
       ipv6_cidr_blocks = []      # Required
       prefix_list_ids  = []      # Required
