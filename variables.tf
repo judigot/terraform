@@ -28,8 +28,8 @@ variable "username" {
 
 variable "region" {
   type    = string
-  # default = "us-west-2"
-  default = "ap-southeast-1"
+  default = "us-west-2"
+  # default = "ap-southeast-1"
 }
 
 variable "ssh_key_name" {
