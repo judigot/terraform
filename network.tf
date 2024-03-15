@@ -53,7 +53,7 @@ resource "aws_subnet" "public_subnet_2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = "${var.region}c" // Specify AZ if needed, uncomment as necessary.
+  availability_zone       = "${var.region}b" // Specify AZ if needed, uncomment as necessary.
 
   tags = {
     Name = "dev-public"
@@ -66,7 +66,7 @@ resource "aws_route_table_association" "public_rt_assoc_2" {
 }
 
 resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = "main"
+  name       = "sg"
   subnet_ids = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id] // Groups our subnets for the RDS instance.
 
   tags = {
@@ -76,8 +76,8 @@ resource "aws_db_subnet_group" "db_subnet_group" {
 
 resource "aws_security_group" "sg" {
   vpc_id = aws_vpc.main.id
-  # name        = "dev_sg" # Optional
-  description = "Dev security group"
+  name        = "App Security Group" # Optional
+  description = "App security group"
 
   ingress = [
     {
