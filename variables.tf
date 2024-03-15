@@ -28,8 +28,8 @@ variable "username" {
 
 variable "region" {
   type    = string
-  default = "us-east-1" # N. Virginia
-  # default = "us-east-2" # Ohio
+  # default = "us-east-1" # N. Virginia
+  default = "us-east-2" # Ohio
   # default = "us-west-2" # Oregon
   # default = "ap-southeast-1" # Singapore
 }
