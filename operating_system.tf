@@ -1,10 +1,16 @@
+/*
+Search this in AMI Catalog > Community AMIs:
+
+  ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server
+
+*/
 data "aws_ami" "ubuntu-2204" {
   most_recent = true
-  owners      = ["099720109477"]
+  owners      = ["099720109477"] # Canonical Ltd. Account Number
 
   filter {
-    name   = "image-id"
-    values = ["ami-0735c191cf914754d"]
+    name   = "architecture"
+    values = ["x86_64"]
   }
 
   filter {
