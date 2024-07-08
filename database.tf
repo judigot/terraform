@@ -56,7 +56,7 @@ resource "aws_db_instance" "database" {
   multi_az                = false  // Consider setting to true for production for higher availability.
   vpc_security_group_ids  = [aws_security_group.rds_sg[count.index].id]  // Applies our SG to the RDS instance.
   db_subnet_group_name    = aws_db_subnet_group.db_subnet_group[count.index].name  // Assigns our DB subnet group.
-  db_name                 = "App Database"
+  db_name                 = "app_database"
   publicly_accessible     = true  // Allows the RDS instance to be accessible from the internet.
   skip_final_snapshot     = true  // Caution: Skipping final snapshot can lead to data loss on delete.
 
