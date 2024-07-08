@@ -1,0 +1,19 @@
+{
+    "name": "terraform",
+    "version": "1.0.0",
+    "description": "App",
+    "main": "index.js",
+    "scripts": {
+      "init": "terraform init",
+      "dev": "terraform apply -auto-approve -var-file env.development.tfvars -target=aws_instance.app_server",
+      "dev:db": "terraform apply -auto-approve -var-file env.development.tfvars -var create_rds_instance=true",
+      "start": "terraform apply -auto-approve -var-file env.production.tfvars",
+      "start:db": "terraform apply -auto-approve -var-file env.production.tfvars -var create_rds_instance=true",
+      "plan": "terraform plan",
+      "destroy": "terraform destroy -auto-approve"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+  }
+  
