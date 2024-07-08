@@ -31,7 +31,7 @@ AWS EC2 instance pre-installed with Docker
 2. Reference it in **providers.tf**
     ```
     provider "aws" {
-        region = "us-west-2"
+        region = "us-east-2"
         shared_config_files      = ["~/.aws/conf"]
         shared_credentials_files = ["~/.aws/credentials"]
         profile                  = "default" # [default] profile name contained in ~/.aws/credentials
