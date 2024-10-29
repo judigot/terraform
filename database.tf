@@ -52,7 +52,8 @@ resource "aws_db_instance" "database" {
   max_allocated_storage   = 100 # Enables storage autoscaling as needed.
 
   storage_type            = "gp2"  // Utilizes SSD storage for better performance.
-  instance_class          = "db.t4g.micro"  // Selected for cost-efficiency; adjust based on need.
+  # instance_class          = "db.t4g.micro"  // Selected for cost-efficiency; adjust based on need.
+  instance_class          = "db.r5.large"
   multi_az                = false  // Consider setting to true for production for higher availability.
   vpc_security_group_ids  = [aws_security_group.rds_sg[count.index].id]  // Applies our SG to the RDS instance.
   db_subnet_group_name    = aws_db_subnet_group.db_subnet_group[count.index].name  // Assigns our DB subnet group.

@@ -103,6 +103,28 @@ resource "aws_security_group" "sg" {
       security_groups  = []      # Required
       ipv6_cidr_blocks = []      # Required
       prefix_list_ids  = []      # Required
+    },
+    {
+      from_port        = 3000
+      to_port          = 3000
+      protocol         = "tcp"
+      cidr_blocks      = ["0.0.0.0/0"]
+      self             = false
+      description = "Allow access to Vite development server on port 3000"
+      security_groups  = []    
+      ipv6_cidr_blocks = []    
+      prefix_list_ids  = []    
+    },
+    {
+      from_port        = 8000
+      to_port          = 8000
+      protocol         = "tcp"
+      cidr_blocks      = ["0.0.0.0/0"]
+      self             = false
+      description = "Allow access to Vite development server on port 8000"
+      security_groups  = []    
+      ipv6_cidr_blocks = []    
+      prefix_list_ids  = []    
     }
   ]
 
