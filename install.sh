@@ -23,13 +23,3 @@ sudo apt install -y unzip p7zip p7zip-full
 #==========NGINX==========#
 sudo apt install -y nginx
 #==========NGINX==========#
-
-#==========PHP, COMPOSER, & LARAVEL INSTALLER==========#
-/bin/bash -c "$(curl -fsSL https://php.new/install/linux)"
-
-source $HOME/.bashrc
-#==========PHP, COMPOSER, & LARAVEL INSTALLER==========#
-
-#==========NVM & NODE.JS==========#
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
-#==========NVM & NODE.JS==========#

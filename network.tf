@@ -70,65 +70,59 @@ resource "aws_security_group" "sg" {
   name        = "App Security Group" # Optional
   description = "App security group"
 
-  ingress = [
-    {
-      from_port        = 22
-      to_port          = 22
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"] # Replace with your IP/range
-      self             = false
-      description      = "SSH: Allow SSH access from any IP address. For security reasons, consider restricting this to known IP addresses or ranges." # Required
+  ingress {
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]  # Replace with your IP/range
+    self             = false
+    description      = "SSH: Allow SSH access from any IP address. For security reasons, consider restricting this to known IP addresses or ranges." # Required
+    security_groups  = []    # Required
+    ipv6_cidr_blocks = []    # Required
+    prefix_list_ids  = []    # Required
+  }
+
+  ingress {
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    self             = false
+    description      = "HTTP: Allow HTTP traffic from any IP address."
+    security_groups  = []    # Required
+    ipv6_cidr_blocks = []    # Required
+    prefix_list_ids  = []    # Required
+  }
+
+  ingress {
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    self             = false
+    description      = "HTTPS: Allow HTTPS traffic from any IP address."
+    security_groups  = []    # Required
+    ipv6_cidr_blocks = []    # Required
+    prefix_list_ids  = []    # Required
+  }
+
+  # Dynamic ingress rule for allowing application ports (see "app_ports" in variables.tf)
+  dynamic "ingress" {
+    for_each = var.app_ports
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from anywhere (adjust as needed)
+      self        = false
+      description = "Allow access to application on port ${ingress.value}"
       security_groups  = []    # Required
       ipv6_cidr_blocks = []    # Required
       prefix_list_ids  = []    # Required
-    },
-    {
-      from_port        = 80
-      to_port          = 80
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-      self             = false
-      description = "HTTP: Allow HTTP traffic from any IP address. This rule enables web traffic access to your resources. For enhanced security, consider narrowing this to trusted IP ranges." # Required
-      security_groups  = []     # Required
-      ipv6_cidr_blocks = []     # Required
-      prefix_list_ids  = []     # Required
-    },
-    {
-      from_port        = 443
-      to_port          = 443
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-      self             = false
-      description = "HTTPS: Allow HTTPS traffic from any IP address. This rule is crucial for secure, encrypted web traffic access to your resources. Narrowing down to trusted IPs is advised for improved security." # Required
-      security_groups  = []      # Required
-      ipv6_cidr_blocks = []      # Required
-      prefix_list_ids  = []      # Required
-    },
-    {
-      from_port        = 3000
-      to_port          = 3000
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-      self             = false
-      description = "Allow access to Vite development server on port 3000"
-      security_groups  = []    
-      ipv6_cidr_blocks = []    
-      prefix_list_ids  = []    
-    },
-    {
-      from_port        = 8000
-      to_port          = 8000
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-      self             = false
-      description = "Allow access to Vite development server on port 8000"
-      security_groups  = []    
-      ipv6_cidr_blocks = []    
-      prefix_list_ids  = []    
     }
-  ]
+  }
 
-
+  # Default egress rule for allowing all outbound traffic
   egress = [{
     cidr_blocks      = ["0.0.0.0/0"] # Can have multiple IPs
     description      = ""            # Required
