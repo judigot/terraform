@@ -40,7 +40,7 @@ resource "aws_db_instance" "database" {
   count = var.create_rds_instance ? 1 : 0
   identifier              = "postgres"
   engine                  = "postgres"
-  engine_version          = "14"
+  engine_version          = "17"
 
   # identifier              = "mysql"
   # engine                  = "mysql"

@@ -39,7 +39,7 @@ resource "aws_instance" "app_server" {
   user_data = file("install.sh")
   #==========PROJECT BOOTSTRAPPING==========#
 
-  #==========POST-BUILD SCRIPT==========#
+  #==========POST-BUILD ACTION==========#
   provisioner "file" {
     source      = "${path.module}/${var.initial_script}.sh"
     destination = "/home/ubuntu/${var.initial_script}.sh"
@@ -60,7 +60,7 @@ resource "aws_instance" "app_server" {
       # "sudo sh /home/ubuntu/${var.initial_script}.sh"
     ]
   }
-  #==========POST-BUILD SCRIPT==========#
+  #==========POST-BUILD ACTION==========#
 
 }
 

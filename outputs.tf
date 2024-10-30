@@ -2,6 +2,10 @@ output "dev_ip" {
   value = aws_instance.app_server.public_ip
 }
 
+output "ssh_command" {
+  value = "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${var.username}@${aws_instance.app_server.public_ip}"
+}
+
 # output "public_ip" {
 #   value = aws_eip.ip_address.public_ip
 # }
