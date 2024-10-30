@@ -106,6 +106,15 @@ resource "aws_security_group" "sg" {
     prefix_list_ids  = []    # Required
   }
 
+  # Windows only
+  ingress {
+    from_port   = 3389          # RDP port
+    to_port     = 3389          # RDP port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Open to all IPs (not recommended for production). Replace with your IP, e.g., "YOUR_PUBLIC_IP/32"
+    description      = "Allow Windows Remote Desktop Protocol (RDP)"
+  }
+
   # Dynamic ingress rule for allowing application ports (see "app_ports" in variables.tf)
   dynamic "ingress" {
     for_each = var.app_ports
