@@ -3,7 +3,7 @@ Search this in AMI Catalog > Community AMIs:
   ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server
 */
 
-data "aws_ami" "ubuntu-2204" {
+data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical Ltd. Account Number
 

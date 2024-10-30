@@ -4,7 +4,7 @@ resource "aws_key_pair" "auth" {
 }
 
 resource "aws_instance" "app_server" {
-  ami           = data.aws_ami.ubuntu-2204.id
+  ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
 
   # count = 1

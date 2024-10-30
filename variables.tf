@@ -5,10 +5,30 @@ Create these files to override the default variables:
   development.tfvars
 */
 
+variable "db_name" {
+  description = "Database name"
+  type        = string
+  default = "app_db"
+}
+
+variable "db_username" {
+  description = "Database username"
+  type        = string
+  default = "root"
+}
+
+variable "db_password" {
+  description = "Database password"
+  type        = string
+  default = "password"
+  sensitive   = true  # Mark this variable as sensitive to avoid accidental exposure
+}
+
 variable "instance_type" {
   type    = string
   default = "t2.micro"
 }
+
 variable "disk_size" {
   type = number
 
@@ -18,7 +38,7 @@ variable "disk_size" {
 
 variable "volume_type" {
   type    = string
-  default = "gp2"
+  default = "gp3"
 }
 
 variable "username" {
@@ -52,7 +72,7 @@ variable "initial_script" {
   default = "init"
 }
 
-variable "create_rds_instance" {
+variable "create_database" {
   description = "Whether to create the RDS instance"
   type        = bool
   default     = false
