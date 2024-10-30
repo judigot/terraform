@@ -43,24 +43,20 @@ resource "aws_instance" "app_server" {
 resource "null_resource" "post_build" {
   depends_on = [aws_instance.app_server]
 
-
   connection {
     type        = "ssh"
     user        = var.username
     private_key = file("~/.ssh/${var.ssh_key_name}")
     host        = aws_instance.app_server.public_ip
   }
-
   provisioner "file" {
     source      = "${path.module}/${var.initial_script}.sh"
     destination = "/home/ubuntu/${var.initial_script}.sh"
   }
-
   provisioner "file" {
     source      = "${path.module}/app"
     destination = "/home/ubuntu/app"
   }
-
   provisioner "remote-exec" {
     on_failure = continue
 
