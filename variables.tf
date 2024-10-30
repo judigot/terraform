@@ -43,7 +43,7 @@ variable "volume_type" {
 
 variable "username" {
   type    = string
-  default = "ubuntu"
+  default = "admin"
 }
 
 variable "region" {
@@ -59,7 +59,7 @@ variable "region" {
 
 variable "ssh_key_name" {
   type    = string
-  default = "id_rsa"
+  default = "aws.pem"
 }
 
 variable "host_os" {

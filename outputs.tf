@@ -3,7 +3,7 @@ output "dev_ip" {
 }
 
 output "ssh_command" {
-  value = "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${var.username}@${aws_instance.app_server.public_ip}"
+  value = "ssh -i ~/.ssh/${var.ssh_key_name} -o StrictHostKeyChecking=no ${var.username}@${aws_instance.app_server.public_ip}"
 }
 
 output "db_endpoint" {
