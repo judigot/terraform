@@ -43,7 +43,7 @@ variable "volume_type" {
 
 variable "username" {
   type    = string
-  default = "admin"
+  default = "ubuntu" # ubuntu is the default and can not be changed unless you create another user inside the instance
 }
 
 variable "region" {

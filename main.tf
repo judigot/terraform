@@ -4,7 +4,7 @@ resource "aws_key_pair" "auth" {
 }
 
 resource "aws_instance" "app_server" {
-  ami           = data.aws_ami.ubuntu.id
+  ami           = data.aws_ami.server_os.id
   instance_type = var.instance_type
 
   # count = 1
@@ -38,8 +38,19 @@ resource "aws_instance" "app_server" {
   #==========PROJECT BOOTSTRAPPING==========#
   user_data = file("install.sh")
   #==========PROJECT BOOTSTRAPPING==========#
+}
 
-  #==========POST-BUILD ACTION==========#
+resource "null_resource" "post_build" {
+  depends_on = [aws_instance.app_server]
+
+
+  connection {
+    type        = "ssh"
+    user        = var.username
+    private_key = file("~/.ssh/${var.ssh_key_name}")
+    host        = aws_instance.app_server.public_ip
+  }
+
   provisioner "file" {
     source      = "${path.module}/${var.initial_script}.sh"
     destination = "/home/ubuntu/${var.initial_script}.sh"
@@ -55,13 +66,9 @@ resource "aws_instance" "app_server" {
 
     inline = [
       "cd /home/ubuntu",
-      # "chmod +x /tmp/${var.initial_script}.sh",
       "sh ${var.initial_script}.sh"
-      # "sudo sh /home/ubuntu/${var.initial_script}.sh"
     ]
   }
-  #==========POST-BUILD ACTION==========#
-
 }
 
 # resource "null_resource" "setup_ssh_config" {
