@@ -20,6 +20,7 @@ resource "aws_instance" "app_server" {
   root_block_device {
     volume_type = var.volume_type
     volume_size = var.disk_size # GB
+    delete_on_termination = true
   }
 
   tags = {

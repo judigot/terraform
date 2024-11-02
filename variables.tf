@@ -86,12 +86,12 @@ variable "app_ports" {
     3000,  # Node.js, React, Express.js
     5000,  # Flask, Django, Node.js
     8080,  # Tomcat, Spring Boot, Node.js
-    8000,  # Django, PHP built-in server, Apache Tomcat
+    8000,  # Laravel, Django, PHP built-in server, Apache Tomcat
     3306,  # MySQL, MariaDB
     5432,  # PostgreSQL
     6379,  # Redis
     27017, # MongoDB
     9200,  # Elasticsearch
-    9000   # SonarQube, FastAPI, Laravel
+    9000   # SonarQube, FastAPI
   ]
 }

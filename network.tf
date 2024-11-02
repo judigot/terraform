@@ -133,14 +133,14 @@ resource "aws_security_group" "sg" {
 
   # Default egress rule for allowing all outbound traffic
   egress = [{
-    cidr_blocks      = ["0.0.0.0/0"] # Can have multiple IPs
-    description      = ""            # Required
     from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"] # Can have multiple IPs
+    self             = false
+    description      = "Allow outbound traffic"
     ipv6_cidr_blocks = [] # Required
     prefix_list_ids  = [] # Required
-    protocol         = "-1"
     security_groups  = [] # Required
-    self             = false
-    to_port          = 0
   }]
 }
