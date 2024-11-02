@@ -1,8 +1,9 @@
 /* 
 Create these files to override the default variables:
-  terraform.tfvars
-  production.tfvars
-  development.tfvars
+  env.production.tfvars
+  env.development.tfvars
+
+  *env. prefix is just to group these files together
 */
 
 variable "db_name" {

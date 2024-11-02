@@ -7,8 +7,6 @@ resource "aws_instance" "app_server" {
   ami           = data.aws_ami.server_os.id
   instance_type = var.instance_type
 
-  # count = 1
-
   # SSH Key
   key_name = aws_key_pair.auth.key_name # ID/Keyname
 
