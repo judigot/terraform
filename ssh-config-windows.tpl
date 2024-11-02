@@ -1,4 +1,5 @@
-add-content -path C:/users/Jude/.ssh/config -value @'
+$sshConfigPath = "$env:USERPROFILE/.ssh/config"
+Add-Content -Path $sshConfigPath -Value @'
 
 Host ${hostname}
     HostName ${hostname}
