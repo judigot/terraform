@@ -9,17 +9,17 @@ Search this in AMI Catalog > Community AMIs:
 data "aws_ami" "server_os" {
   most_recent = true
 
-  # owners = ["099720109477"] # Canonical Ltd. Account Number
-  # filter {
-  #   name   = "name"
-  #   values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"] # * to use the latest
-  # }
-
-  owners = ["801119661308"] # Windows Account Number
+  owners = ["099720109477"] # Canonical Ltd. Account Number
   filter {
     name   = "name"
-    values = ["Windows_Server-2022-English-Full-Base-*"] # * to use the latest
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"] # * to use the latest
   }
+
+  # owners = ["801119661308"] # Windows Account Number
+  # filter {
+  #   name   = "name"
+  #   values = ["Windows_Server-2022-English-Full-Base-*"] # * to use the latest
+  # }
 
   filter {
     name   = "architecture"
