@@ -66,78 +66,48 @@ resource "null_resource" "post_build" {
   }
 }
 
-# resource "null_resource" "setup_ssh_config" {
-#   # Ensures this runs after the EIP is associated
-#   depends_on = [aws_instance.app_server]
-
-#   # Optionally, use triggers to control when the provisioner should run
-#   triggers = {
-#     ip_address = aws_instance.app_server.public_ip
-#   }
-
-#   provisioner "local-exec" {
-#     command = templatefile("ssh-config-${var.host_os}.tpl", {
-#       hostname     = aws_instance.app_server.public_ip,
-#       user         = var.username,
-#       identityfile = "~/.ssh/${var.ssh_key_name}"
-#     })
-#     interpreter = var.host_os == "linux" ? ["bash", "-c"] : ["Powershell", "-Command"]
-#   }
-# }
-
 resource "null_resource" "setup_ssh_config" {
-  depends_on = [aws_instance.app_server]
-
-  triggers = {
-    ip_address = aws_instance.app_server.public_ip
-  }
-
-  provisioner "local-exec" {
-    /* 
-     * The command uses a shell conditional to check if the OS is Windows.
-     * It uses 'uname' to get the OS name and 'grep' to look for a Windows identifier.
-     * If the condition is met (indicating we're on Windows), it executes the template file command.
-     * Otherwise, it simply echoes 'Not on Windows', effectively skipping the operation.
-     */
-    command = <<EOT
-if uname -s | grep -iq 'mingw\\|cygwin\\|msys'; then
-  Powershell -Command "${templatefile("ssh-config-windows.tpl", {
-    hostname     = aws_instance.app_server.public_ip,
-    user         = var.username,
-    identityfile = "~/.ssh/${var.ssh_key_name}"
-})}"
-else
-  echo 'Not running on Windows. Skipping SSH config setup.'
-fi
-EOT
-
-interpreter = ["bash", "-c"]
-}
-}
-
-
-resource "null_resource" "open_instance_in_vs_code" {
   # Ensures this runs after the EIP is associated
-  # depends_on = [aws_eip.ip_address]
   depends_on = [aws_instance.app_server]
 
   # Optionally, use triggers to control when the provisioner should run
   triggers = {
-    always_run = timestamp()
     ip_address = aws_instance.app_server.public_ip
   }
 
   provisioner "local-exec" {
-    # command = "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
+    command = templatefile(data.external.os_check.result["is_windows"] == "true" ? "ssh-config-windows.tpl" : "ssh-config-mac-linux.tpl", {
+      hostname     = aws_instance.app_server.public_ip,
+      user         = var.username,
+      identityfile = "~/.ssh/${var.ssh_key_name}"
+    })
 
-    command = <<EOT
-if uname -s | grep -iq 'mingw\\|cygwin\\|msys'; then
-  Powershell -Command "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
-else
-  echo "ssh -i ~/.ssh/${var.ssh_key_name} ${var.username}@${self.triggers.ip_address}"
-fi
-EOT
-
-    interpreter = ["bash", "-c"]
+    interpreter = data.external.os_check.result["is_windows"] == "true" ? ["powershell", "-Command"] : ["bash", "-c"]
   }
 }
+
+# resource "null_resource" "open_instance_in_vs_code" {
+#   # Ensures this runs after the EIP is associated
+#   # depends_on = [aws_eip.ip_address]
+#   depends_on = [aws_instance.app_server]
+
+#   # Optionally, use triggers to control when the provisioner should run
+#   triggers = {
+#     always_run = timestamp()
+#     ip_address = aws_instance.app_server.public_ip
+#   }
+
+#   provisioner "local-exec" {
+#     # command = "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
+
+#     command = <<EOT
+# if uname -s | grep -iq 'mingw\\|cygwin\\|msys'; then
+#   Powershell -Command "code --remote ssh-remote+${var.username}@${self.triggers.ip_address}"
+# else
+#   echo "ssh -i ~/.ssh/${var.ssh_key_name} ${var.username}@${self.triggers.ip_address}"
+# fi
+# EOT
+
+#     interpreter = ["bash", "-c"]
+#   }
+# }

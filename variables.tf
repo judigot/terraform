@@ -63,11 +63,6 @@ variable "ssh_key_name" {
   default = "aws.pem"
 }
 
-variable "host_os" {
-  type    = string
-  default = "windows"
-}
-
 variable "initial_script" {
   type    = string
   default = "init"
