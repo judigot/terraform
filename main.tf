@@ -116,7 +116,7 @@ interpreter = ["bash", "-c"]
 }
 
 
-resource "null_resource" "open_remote_connection" {
+resource "null_resource" "open_instance_in_vs_code" {
   # Ensures this runs after the EIP is associated
   # depends_on = [aws_eip.ip_address]
   depends_on = [aws_instance.app_server]
