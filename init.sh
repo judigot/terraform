@@ -4,10 +4,10 @@ main() {
     createAppDir
 
     # Local Nginx Setup
-    # waitForNginx
-    # deleteNginxFiles
-    # enableEditing
-    # serveHTMLFile
+    waitForNginx
+    deleteNginxFiles
+    enableEditing
+    serveHTMLFile
 
     # Environments
     setupPHPEnvironment

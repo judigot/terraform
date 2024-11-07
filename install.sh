@@ -4,7 +4,7 @@ main() {
     updateSystem
     installDocker
     installZipExtractors
-    # installNginx
+    installNginx
 }
 
 updateSystem() {
