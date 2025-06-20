@@ -30,11 +30,7 @@ install_terraform() {
 generate_github_ssh() {
     echo "Generating GitHub SSH key..."
     mkdir -p ~/.ssh
-    ssh-keygen -t rsa -f ~/.ssh/id_rsa -P "" -q
-    chmod 600 ~/.ssh/id_rsa
-    echo -e "\nPublic key (add to GitHub):\n"
-    cat ~/.ssh/id_rsa.pub
-    echo
+    ssh-keygen -t rsa -f ~/.ssh/id_rsa -P "" && chmod 600 ~/.ssh/id_rsa && clear && echo -e "Copy and paste the public key below to your GitHub account:\n\n\e[32m$(cat ~/.ssh/id_rsa.pub) \e[0m\n" # Green
 }
 
 generate_aws_pem() {
