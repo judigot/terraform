@@ -2,6 +2,7 @@
 
 main() {
     update_packages
+    install_aws_cli
     install_terraform
     generate_github_ssh
     generate_aws_pem
@@ -13,6 +14,15 @@ update_packages() {
     echo "Updating packages..."
     sudo apt-get update -y
     sudo apt-get install -y unzip curl gnupg software-properties-common lsb-release zip
+}
+
+install_aws_cli() {
+    echo "Installing AWS CLI..."
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+    rm -rf aws awscliv2.zip
+    aws --version && echo "AWS CLI installed."
 }
 
 install_terraform() {

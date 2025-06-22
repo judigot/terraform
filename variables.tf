@@ -90,3 +90,9 @@ variable "app_ports" {
     9000   # SonarQube, FastAPI
   ]
 }
+
+variable "os" {
+  description = "The operating system to use for the server (linux or windows)"
+  type        = string
+  default     = "linux"
+}

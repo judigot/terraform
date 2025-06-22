@@ -40,6 +40,7 @@ resource "aws_instance" "app_server" {
 }
 
 resource "null_resource" "post_build" {
+  count = var.os == "windows" ? 0 : 1
   depends_on = [aws_instance.app_server]
 
   connection {
@@ -63,6 +64,40 @@ resource "null_resource" "post_build" {
       "cd /home/ubuntu",
       "sh ${var.initial_script}.sh"
     ]
+  }
+}
+
+resource "null_resource" "post_build_windows" {
+  count      = var.os == "windows" ? 1 : 0
+  depends_on = [aws_instance.app_server]
+
+  provisioner "local-exec" {
+    command = <<EOT
+echo "Waiting for Windows password to become available..."
+
+while true; do
+  PASSWORD=$(aws ec2 get-password-data \
+    --instance-id ${aws_instance.app_server.id} \
+    --priv-launch-key ~/.ssh/${var.ssh_key_name} \
+    --region ${var.region} \
+    --profile admin \
+    --query PasswordData \
+    --output text)
+
+  if [ "$PASSWORD" != "None" ] && [ -n "$PASSWORD" ]; then
+    echo ""
+    echo "username:"
+    echo "Administrator"
+    echo "password:"
+    echo "$PASSWORD"
+    break
+  fi
+
+  echo "Still waiting... retrying in 10s..."
+  sleep 10
+done
+EOT
+    interpreter = ["bash", "-c"]
   }
 }
 
