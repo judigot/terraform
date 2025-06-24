@@ -1,4 +1,7 @@
-instance_type = "c5ad.large" # 2 vCPUs, 4 GB RAM, AMD EPYC
+
+instance_type = "m7i.xlarge" # Power User: 4 vCPUs, 16 GB RAM, Intel Xeon (i7-class)
+
+
 disk_size     = "75" # 10GB
 volume_type   = "gp3"
 
