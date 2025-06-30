@@ -4,7 +4,7 @@ instance_type = "m7i.xlarge"      # Power User: 4 vCPUs, 16 GB RAM, Intel Xeon
 GPU-Enabled Instances:
 
     instance_type = "g4dn.medium"     # Entry GPU Node: 2 vCPUs, 8 GB RAM, 1×NVIDIA T4 GPU (16 GB) — ~$0.252/hr → ₱9,000/mo
-    instance_type = "g4dn.xlarge"     # GPU-Powered Power User: 4 vCPUs, 16 GB RAM, 1×NVIDIA T4 GPU (16 GB) — ~$0.526/hr → ₱19,000/mo
+    instance_type = "g4dn.xlarge"     # ⭐ Lenovo Legion Equivalent ⭐ - GPU-Powered Power User: 4 vCPUs, 16 GB RAM, 1×NVIDIA T4 GPU (16 GB) — ~$0.526/hr → ₱19,000/mo
     instance_type = "g5.12xlarge"     # VFX Rendering: 48 vCPUs, 192 GB RAM, 4×NVIDIA A10G GPUs (24 GB each) — $5.672/hr → ₱412,000/mo
     instance_type = "g5.48xlarge"     # Studio Node: 192 vCPUs, 768 GB RAM, 8×NVIDIA A10G GPUs (24 GB each) — ~$22.688/hr → ₱1.30 M/mo
     instance_type = "p4d.24xlarge"    # Neural Renderer: 96 vCPUs, 1.1 TB RAM, 8×NVIDIA A100 GPUs (40 GB each) — ~$32.77/hr → ₱1.87 M/mo
