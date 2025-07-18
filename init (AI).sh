@@ -6,24 +6,27 @@ main() {
     # installOllama
     # startOllama
     # pullDeepSeek
-    install_certbot_and_ssl "judigot.com"
-    configureNginxProxy
     runOpenWebUI
     showEndpoints
+    # install_certbot_and_ssl "judigot.com"
+    # configureNginxProxy
+
+    # ==============================
+    # sudo lsof -i :11434
+
+    # sudo pkill -f "ollama serve"
+
+    # sudo systemctl daemon-reload && sudo systemctl enable ollama && sudo systemctl start ollama
 
     # docker exec openwebui printenv | grep OLLAMA
 
     # vim /etc/systemd/system/ollama.service
 
     # ExecStart=/usr/bin/env OLLAMA_HOST=0.0.0.0 /usr/local/bin/ollama serve
-    
+
     # ExecStart=/usr/bin/ollama serve
 
-    # sudo systemctl daemon-reload
-    # sudo systemctl enable ollama
-    # sudo systemctl start ollama
-
-
+    # ==============================
 
     # Remove ollama
 
@@ -50,12 +53,9 @@ main() {
     # # Verify no Ollama-related processes are running
     # ps aux | grep ollama
 
-    # # If any processes are still running, kill them
-    # sudo kill <pid>
-
     # # Verify if the Ollama package has been completely removed
     # dpkg -l | grep ollama
-    
+
 }
 
 fixDockerPermissions() {
@@ -84,40 +84,41 @@ startOllama() {
     export OLLAMA_HOST=0.0.0.0
 
     # Ensure no duplicate Ollama processes
-    pkill -f "ollama serve" 2>/dev/null || true
+    sudo pkill -f "ollama serve" 2>/dev/null || true
 
     # Start Ollama in the background
-    nohup ollama serve > /var/log/ollama.log 2>&1 &
+    sudo nohup ollama serve >/var/log/ollama.log 2>&1 &
 
     sleep 5
 }
 
 pullDeepSeek() {
     echo "[5/8] Pulling DeepSeek R1 Latest..."
-    ollama pull deepseek-r1:latest
+    # ollama pull deepseek-r1:latest
+    ollama pull deepseek-r1:1.5b
 }
 
 install_certbot_and_ssl() {
-  DOMAIN=$1
+    DOMAIN=$1
 
-  # Install Certbot and the NGINX plugin
-  sudo apt install -y python3-certbot-nginx
+    # Install Certbot and the NGINX plugin
+    sudo apt install -y python3-certbot-nginx
 
-  # Generate SSL certificates for the primary domain
-  sudo certbot --nginx -d $DOMAIN -d www.$DOMAIN
+    # Generate SSL certificates for the primary domain
+    sudo certbot --nginx -d $DOMAIN -d www.$DOMAIN
 
-  # Auto-renew the SSL certificate (Certbot automatically installs a cron job for this)
-  sudo certbot renew --dry-run
+    # Auto-renew the SSL certificate (Certbot automatically installs a cron job for this)
+    sudo certbot renew --dry-run
 
-  # Keys are stored in /etc/letsencrypt
-  echo "SSL certificates are located in /etc/letsencrypt/live/$DOMAIN/"
+    # Keys are stored in /etc/letsencrypt
+    echo "SSL certificates are located in /etc/letsencrypt/live/$DOMAIN/"
 }
 
 configureNginxProxy() {
     echo "[6/8] Configuring NGINX as CORS proxy for Ollama..."
 
     # Configure the NGINX proxy settings for Ollama and OpenWebUI
-    sudo tee /etc/nginx/sites-available/ollama_proxy > /dev/null <<EOF
+    sudo tee /etc/nginx/sites-available/ollama_proxy >/dev/null <<EOF
 # /etc/nginx/sites-available/judigot.com
 server {
     listen 80;
@@ -183,7 +184,10 @@ runOpenWebUI() {
     IP=$(hostname -I | awk '{print $1}')
     echo "🌐 Using host IP: $IP for OLLAMA_BASE_URL"
 
+    # Remove container, image, and volumes
     sudo docker rm -f openwebui 2>/dev/null || true
+    sudo docker volume rm openwebui-data 2>/dev/null || true
+    sudo docker rmi ghcr.io/open-webui/open-webui:main 2>/dev/null || true
 
     sudo docker run -d \
         --restart unless-stopped \
