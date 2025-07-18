@@ -15,6 +15,7 @@ GPU-Enabled Instances:
 
 Non-GPU Instances:
 
+    instance_type = "c5ad.large"      # Budget Compute Node: 2 vCPUs, 4 GB RAM — ~$0.086/hr → ₱3,100/mo
     instance_type = "m7i.xlarge"      # Power User: 4 vCPUs, 16 GB RAM, Intel Xeon (i7-class) — ~$0.336/hr → ₱12,240/mo
     instance_type = "m7i.2xlarge"     # Advanced User: 8 vCPUs, 32 GB RAM — ~$0.672/hr → ₱24,480/mo
     instance_type = "c7i.2xlarge"     # High Performance: 8 vCPUs, 16 GB RAM — ~$0.709/hr → ₱25,800/mo
