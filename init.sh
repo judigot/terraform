@@ -1,97 +1,91 @@
 #!/bin/bash
 
 main() {
-    installDocker
-    installOllama
-    startOllama
-    pullDeepSeek
-    installNginx
-    configureNginxProxy
-    runOpenWebUI
-    showEndpoints
+    createAppDir
+
+    # Local Nginx Setup
+    waitForNginx
+    deleteNginxFiles
+    enableEditing
+    serveHTMLFile
+
+    # Environments
+    setupPHPEnvironment
+    setupNodeEnvironment
+
+    generateSSHKey
 }
 
-installDocker() {
-    echo "[1/7] Installing Docker..."
-    sudo apt update
-    sudo apt install -y docker.io
-    sudo systemctl enable docker
-    sudo usermod -aG docker $USER
+createAppDir() {
+    # Create application directory
+    echo "Creating app directory..."
+    sudo mkdir -p /home/ubuntu/app
+    sudo chmod -R 777 /home/ubuntu/app
 }
 
-installOllama() {
-    echo "[2/7] Installing Ollama..."
-    curl -fsSL https://ollama.com/install.sh | sh
+waitForNginx() {
+    # Wait until Nginx is up and running
+    echo "Waiting for Nginx to be up..."
+    until sudo systemctl is-active --quiet nginx; do
+        sleep 1
+    done
+    echo "Nginx is up and running."
 }
 
-startOllama() {
-    echo "[3/7] Starting Ollama..."
-    nohup ollama serve > /dev/null 2>&1 &
-    sleep 5
+deleteNginxFiles() {
+    # Delete default Nginx files
+    TARGET_DIR="/var/www/html"
+    echo "Deleting default Nginx files in $TARGET_DIR..."
+
+    if cd "$TARGET_DIR"; then
+        sudo rm -rf ./*
+        echo "Deleted all files and directories in $TARGET_DIR."
+    else
+        echo "Failed to change directory to $TARGET_DIR. Ensure the directory exists."
+    fi
 }
 
-pullDeepSeek() {
-    echo "[4/7] Pulling DeepSeek Coder 6.7B..."
-    ollama pull deepseek-coder:6.7b
+enableEditing() {
+    # Ensure Nginx HTML directory is writable
+    TARGET_DIR="/var/www/html"
+    echo "Enabling editing permissions for $TARGET_DIR..."
+    sudo chmod -R 777 $TARGET_DIR
 }
 
-installNginx() {
-    echo "[5/7] Installing NGINX..."
-    sudo apt install -y nginx
-    sudo systemctl enable nginx
+serveHTMLFile() {
+    # Serve the HTML file from the app directory
+    SOURCE_DIR="/home/ubuntu/app"
+    TARGET_DIR="/var/www/html"
+    echo "Copying files from $SOURCE_DIR to $TARGET_DIR..."
+
+    if [ -d "$SOURCE_DIR" ]; then
+        sudo cp -r $SOURCE_DIR/* $TARGET_DIR
+        echo "HTML files have been copied to $TARGET_DIR."
+    else
+        echo "Source directory $SOURCE_DIR does not exist."
+    fi
 }
 
-configureNginxProxy() {
-    echo "[6/7] Configuring NGINX as CORS proxy for Ollama..."
-    sudo tee /etc/nginx/sites-available/ollama_proxy > /dev/null <<EOF
-server {
-    listen 8080;
-
-    location / {
-        proxy_pass http://localhost:11434;
-        proxy_http_version 1.1;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-
-        # CORS Headers
-        add_header Access-Control-Allow-Origin *;
-        add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
-        add_header Access-Control-Allow-Headers 'Content-Type, Authorization';
-
-        if (\$request_method = OPTIONS) {
-            add_header Content-Length 0;
-            add_header Content-Type text/plain;
-            return 204;
-        }
-    }
-}
-EOF
-
-    sudo ln -s /etc/nginx/sites-available/ollama_proxy /etc/nginx/sites-enabled/
-    sudo rm -f /etc/nginx/sites-enabled/default
-    sudo systemctl restart nginx
+setupPHPEnvironment() {
+    # Set up PHP environment
+    echo "Setting up PHP environment..."
+    /bin/bash -c "$(curl -fsSL https://php.new/install/linux)"
+    source $HOME/.bashrc
 }
 
-runOpenWebUI() {
-    echo "[7/7] Running OpenWebUI with Docker..."
-    docker run -d \
-        -p 3000:3000 \
-        -v openwebui-data:/app/backend/data \
-        -e OLLAMA_BASE_URL=http://localhost:11434 \
-        --name openwebui \
-        ghcr.io/open-webui/open-webui:main
+setupNodeEnvironment() {
+    # Set up Node.js environment
+    echo "Setting up Node.js environment..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    nvm install --lts
+    npm install -g pnpm
 }
 
-showEndpoints() {
-    echo ""
-    echo "✅ SETUP COMPLETE — ENDPOINTS:"
-    echo "🌐 Web Chat Interface: http://<your-ec2-ip>:3000"
-    echo "📡 CORS-Ready API:     http://<your-ec2-ip>:8080/api/generate"
-    echo ""
-    echo "Use this endpoint in your React app:"
-    echo "fetch('http://<your-ec2-ip>:8080/api/generate', { method: 'POST', ... })"
+generateSSHKey() {
+    ssh-keygen -t rsa -f ~/.ssh/id_rsa -P "" && clear && echo "Copy and paste the public key below to your GitHub account:\n\e[32m$(cat ~/.ssh/id_rsa.pub) \e[0m" # Green
 }
 
-main
+ main

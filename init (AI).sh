@@ -1,48 +1,46 @@
 #!/bin/bash
 
 main() {
-    installDocker
+    waitForAptLock
+    fixDockerPermissions
     installOllama
     startOllama
     pullDeepSeek
-    installNginx
     configureNginxProxy
     runOpenWebUI
     showEndpoints
 }
 
-installDocker() {
-    echo "[1/7] Installing Docker..."
-    sudo apt update
-    sudo apt install -y docker.io
-    sudo systemctl enable docker
+waitForAptLock() {
+    echo "⏳ Waiting for apt/dpkg lock to be released..."
+    while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do
+        sleep 5
+    done
+}
+
+fixDockerPermissions() {
+    echo "[1/6] Adding user to Docker group..."
     sudo usermod -aG docker $USER
 }
 
 installOllama() {
-    echo "[2/7] Installing Ollama..."
+    echo "[2/6] Installing Ollama..."
     curl -fsSL https://ollama.com/install.sh | sh
 }
 
 startOllama() {
-    echo "[3/7] Starting Ollama..."
+    echo "[3/6] Starting Ollama..."
     nohup ollama serve > /dev/null 2>&1 &
     sleep 5
 }
 
 pullDeepSeek() {
-    echo "[4/7] Pulling DeepSeek Coder 6.7B..."
+    echo "[4/6] Pulling DeepSeek Coder 6.7B..."
     ollama pull deepseek-coder:6.7b
 }
 
-installNginx() {
-    echo "[5/7] Installing NGINX..."
-    sudo apt install -y nginx
-    sudo systemctl enable nginx
-}
-
 configureNginxProxy() {
-    echo "[6/7] Configuring NGINX as CORS proxy for Ollama..."
+    echo "[5/6] Configuring NGINX as CORS proxy for Ollama..."
     sudo tee /etc/nginx/sites-available/ollama_proxy > /dev/null <<EOF
 server {
     listen 8080;
@@ -75,8 +73,9 @@ EOF
 }
 
 runOpenWebUI() {
-    echo "[7/7] Running OpenWebUI with Docker..."
-    docker run -d \
+    echo "[6/6] Running OpenWebUI with Docker..."
+    sudo docker run -d \
+        --restart unless-stopped \
         -p 3000:3000 \
         -v openwebui-data:/app/backend/data \
         -e OLLAMA_BASE_URL=http://localhost:11434 \
