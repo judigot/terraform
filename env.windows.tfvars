@@ -1,6 +1,9 @@
 instance_type = "m7i.xlarge"      # Power User: 4 vCPUs, 16 GB RAM, Intel Xeon (i7-class) — approx. $0.336/hr → ₱12,240/mo
 
 /*
+Instances for AI 🤖:
+    g4dn.xlarge
+
 GPU-Enabled Instances:
 
     instance_type = "g4dn.medium"     # Entry GPU Node: 2 vCPUs, 8 GB RAM, 1×NVIDIA T4 GPU (16 GB) — ~$0.252/hr → ₱9,000/mo
