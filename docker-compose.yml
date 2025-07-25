@@ -1,0 +1,31 @@
+services:
+  n8n:
+    container_name: n8n
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=n8n@123
+      - GENERIC_TIMEZONE=Asia/Manila
+      - TZ=Asia/Manila
+      - N8N_HOST=n8n.judigot.com
+      - N8N_PROTOCOL=https
+      - N8N_PORT=5678
+      - WEBHOOK_TUNNEL_URL=https://n8n.judigot.com
+      - N8N_EDITOR_BASE_URL=https://n8n.judigot.com
+      - N8N_RUNNERS_ENABLED=true
+      - WEBHOOK_URL=https://n8n.judigot.com/
+    volumes:
+      - /mnt/mydisk/n8n_data/.n8n:/home/node/.n8n
+    networks:
+      - n8n_net
+
+networks:
+  n8n_net:
+    name: n8n_net
+
+volumes:
+  n8n_data:
+    name: n8n_data
