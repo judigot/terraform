@@ -16,9 +16,9 @@ services:
       - WEBHOOK_TUNNEL_URL=https://n8n.judigot.com
       - N8N_EDITOR_BASE_URL=https://n8n.judigot.com
       - N8N_RUNNERS_ENABLED=true
-      - WEBHOOK_URL=https://n8n.judigot.com/
+      - WEBHOOK_URL=https://n8n.judigot.com
     volumes:
-      - /mnt/mydisk/n8n_data/.n8n:/home/node/.n8n
+      - n8n_data:/home/node/.n8n
     networks:
       - n8n_net
 
