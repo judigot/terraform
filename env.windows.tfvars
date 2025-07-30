@@ -45,6 +45,26 @@ Non-GPU Instances:
     instance_type = "c7i.4xlarge"     # Compute Heavy: 16 vCPUs, 32 GB RAM — ₱80.83/hr → ₱58,010/mo
     instance_type = "r7i.4xlarge"     # Data Cruncher: 16 vCPUs, 128 GB RAM — ₱57.46/hr → ₱41,940/mo
     instance_type = "m7i.8xlarge"     # Elite Workstation: 32 vCPUs, 128 GB RAM — ₱152.13/hr → ₱110,980/mo
+
+Instances for RDS 🛢: Amazon Relational Database Service (Production-Ready Only)
+
+General Purpose (Balanced CPU/Memory):
+    instance_type = "db.t3.small"     # Entry-Level Production DB: 2 vCPUs, 2 GB RAM — ₱2.37/hr → ₱1,730/mo
+    instance_type = "db.t3.medium"    # Small Production DB: 2 vCPUs, 4 GB RAM — ₱4.75/hr → ₱3,470/mo
+    instance_type = "db.m5.large"     # Balanced Production DB: 2 vCPUs, 8 GB RAM — ₱13.49/hr → ₱9,850/mo
+    instance_type = "db.m5.xlarge"    # Mid-Sized Production DB: 4 vCPUs, 16 GB RAM — ₱26.98/hr → ₱19,700/mo
+    instance_type = "db.m6g.large"    # Graviton2 Balanced DB: 2 vCPUs, 8 GB RAM (ARM) — ₱12.07/hr → ₱8,800/mo
+
+Memory Optimized (High RAM Workloads):
+    instance_type = "db.r5.large"     # Memory-Optimized DB: 2 vCPUs, 16 GB RAM — ₱18.24/hr → ₱13,320/mo
+    instance_type = "db.r5.xlarge"    # Memory-Optimized DB: 4 vCPUs, 32 GB RAM — ₱36.48/hr → ₱26,640/mo
+    instance_type = "db.r6g.large"    # Graviton2 Memory-Optimized DB: 2 vCPUs, 16 GB RAM (ARM) — ₱16.41/hr → ₱11,980/mo
+    instance_type = "db.r6i.large"    # Intel Memory-Optimized DB: 2 vCPUs, 16 GB RAM — ₱17.67/hr → ₱12,900/mo
+
+Extreme Memory (Enterprise/Heavy Analytics):
+    instance_type = "db.x2g.large"    # Extreme Memory Graviton2 DB: 2 vCPUs, 32 GB RAM — ₱44.65/hr → ₱32,590/mo
+    instance_type = "db.x2g.xlarge"   # Extreme Memory Graviton2 DB: 4 vCPUs, 64 GB RAM — ₱89.30/hr → ₱65,180/mo
+    instance_type = "db.x2iedn.xlarge"# Extreme Memory Intel DB: 4 vCPUs, 128 GB RAM — ₱121.98/hr → ₱89,050/mo
 */
 
 disk_size     = "75" # 10GB
