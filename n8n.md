@@ -27,8 +27,6 @@ sudo systemctl reload nginx
 
 Assign SSL to n8n.judigot.com
 Create n8n account
-demo@judigot.com
-Jude@123
 
 Create Credential in n8n:
     Google Sheets OAuth2 API
