@@ -9,6 +9,10 @@ Change Quotas:
 
     Set quota to 200
 
+Development & Testing 🧪: Versatile and Quick to Create
+    c5ad.large
+    m7i.xlarge 3:35:05 - 3:36:35
+
 Instances for Video 🎬: Hollywood-Grade Video Production & VFX Rendering:
 
     g4dn.medium     # Entry-Level Streaming & Transcoding: Great for testing, low-cost live stream pipelines, or preview rendering

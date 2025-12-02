@@ -81,7 +81,7 @@ setupNodeEnvironment() {
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
     nvm install --lts
-    npm install -g pnpm
+    npm install -g pnpm bun
 }
 
 generateSSHKey() {
