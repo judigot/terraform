@@ -2,8 +2,8 @@
 Search this in AMI Catalog > Community AMIs:
   ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server
 
-  Windows_Server-2022-English-Full-Base-2024.10.09 - with GUI
-  Windows_Server-2022-English-Core-Base-2024.10.09 - command line only (PowerShell)
+  Windows_Server-2025-English-Full-Base - with GUI
+  Windows_Server-2025-English-Core-Base - command line only (PowerShell)
 */
 
 data "aws_ami" "server_os" {
@@ -13,7 +13,7 @@ data "aws_ami" "server_os" {
 
   filter {
     name   = "name"
-    values = var.os == "windows" ? ["Windows_Server-2022-English-Full-Base-*"] : ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+    values = var.os == "windows" ? ["Windows_Server-2025-English-Full-Base-*"] : ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
   }
 
   filter {
