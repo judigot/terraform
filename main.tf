@@ -35,10 +35,17 @@ resource "aws_instance" "app_server" {
   }
 
   #==========PROJECT BOOTSTRAPPING==========#
-  user_data = file("install.sh")
+  user_data_base64 = var.os == "windows" ? base64encode(templatefile("${path.module}/init.windows.ps1", {
+    windows_admin_password = var.windows_admin_password
+    init_ps1_url           = data.external.init_ps1_presign.result.url
+  })) : null
+  
+  # user_data_base64 = var.os == "windows" ? base64encode(templatefile("${path.module}/init.windows.ps1", { windows_admin_password = var.windows_admin_password })) : null
+  user_data        = var.os != "windows" ? file("install.sh") : null
   #==========PROJECT BOOTSTRAPPING==========#
 }
 
+# Waits for Nginx to be available before proceeding
 resource "null_resource" "post_build" {
   count = var.os == "windows" ? 0 : 1
   depends_on = [aws_instance.app_server]
@@ -67,39 +74,40 @@ resource "null_resource" "post_build" {
   }
 }
 
-resource "null_resource" "post_build_windows" {
-  count      = var.os == "windows" ? 1 : 0
-  depends_on = [aws_instance.app_server]
+# # Waits for Windows password to be available before proceeding
+# resource "null_resource" "post_build_windows" {
+#   count      = var.os == "windows" ? 1 : 0
+#   depends_on = [aws_instance.app_server]
 
-  provisioner "local-exec" {
-    command = <<EOT
-echo "Waiting for Windows password to become available..."
+#   provisioner "local-exec" {
+#     command = <<EOT
+# echo "Waiting for Windows password to become available..."
 
-while true; do
-  PASSWORD=$(aws ec2 get-password-data \
-    --instance-id ${aws_instance.app_server.id} \
-    --priv-launch-key ~/.ssh/${var.ssh_key_name} \
-    --region ${var.region} \
-    --profile admin \
-    --query PasswordData \
-    --output text)
+# while true; do
+#   PASSWORD=$(aws ec2 get-password-data \
+#     --instance-id ${aws_instance.app_server.id} \
+#     --priv-launch-key ~/.ssh/${var.ssh_key_name} \
+#     --region ${var.region} \
+#     --profile admin \
+#     --query PasswordData \
+#     --output text)
 
-  if [ "$PASSWORD" != "None" ] && [ -n "$PASSWORD" ]; then
-    echo ""
-    echo "username:"
-    echo "Administrator"
-    echo "password:"
-    echo "$PASSWORD"
-    break
-  fi
+#   if [ "$PASSWORD" != "None" ] && [ -n "$PASSWORD" ]; then
+#     echo ""
+#     echo "username:"
+#     echo "Administrator"
+#     echo "password:"
+#     echo "$PASSWORD"
+#     break
+#   fi
 
-  echo "Still waiting... retrying in 10s..."
-  sleep 10
-done
-EOT
-    interpreter = ["bash", "-c"]
-  }
-}
+#   echo "Still waiting... retrying in 10s..."
+#   sleep 10
+# done
+# EOT
+#     interpreter = ["bash", "-c"]
+#   }
+# }
 
 resource "null_resource" "setup_ssh_config" {
   # Ensures this runs after the EIP is associated

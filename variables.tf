@@ -1,4 +1,10 @@
-/* 
+variable "windows_admin_password" {
+  description = "The password to set for the Windows Administrator account."
+  type        = string
+  sensitive   = true
+  default     = "Admin123!" # Change this in your tfvars or at apply time
+}
+/*
 Create these files to override the default variables:
   env.production.tfvars
   env.development.tfvars
@@ -49,7 +55,7 @@ variable "username" {
 
 variable "region" {
   type    = string
-  
+
   # default = "us-east-1" # N. Virginia
   default = "us-east-2" # Ohio
   # default = "us-west-1" # N. California
