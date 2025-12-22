@@ -145,7 +145,7 @@ function Download-Programs {
 
     # Others (winget source only)
     winget install -e --id Anysphere.Cursor --source winget --silent --accept-package-agreements --accept-source-agreements
-    winget install -e --id ZedIndustries.Zed --source winget --silent --accept-package-agreements --accept-source-agreements
+    # winget install -e --id ZedIndustries.Zed --source winget --silent --accept-package-agreements --accept-source-agreements
     winget install -e --id Docker.DockerDesktop --source winget --silent --accept-package-agreements --accept-source-agreements
 }
 

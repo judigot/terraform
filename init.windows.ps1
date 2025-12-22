@@ -8,14 +8,15 @@ Set-LocalUser -Name "Administrator" -Password $Password
 Enable-LocalUser -Name "Administrator"
 New-Item -Path "C:\_bootstrapped_password.txt" -ItemType File -Force | Out-Null
 
-# Download Init.ps1 to Public Desktop (works even when running as SYSTEM)
-New-Item -ItemType Directory -Force -Path "C:\Users\Public\Desktop" | Out-Null
+
+# Download Init.ps1 to Administrator Desktop
+New-Item -ItemType Directory -Force -Path "C:\Users\Administrator\Desktop" | Out-Null
 
 try {
     try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 } catch {}
 
     $url = "${init_ps1_url}"
-    Invoke-WebRequest -Uri $url -OutFile "C:\Users\Public\Desktop\Init.ps1" -UseBasicParsing -ErrorAction Stop
+    Invoke-WebRequest -Uri $url -OutFile "C:\Users\Administrator\Desktop\Init.ps1" -UseBasicParsing -ErrorAction Stop
     New-Item -ItemType File -Path "C:\Status - Init.ps1 downloaded" -Force | Out-Null
 } catch {
     New-Item -ItemType File -Path "C:\Status - Init.ps1 download FAILED" -Force | Out-Null
@@ -35,6 +36,4 @@ try {
 }
 
 New-Item -ItemType File -Path "C:\Status - user-data completed" -Force | Out-Null
-
-try { Stop-Transcript | Out-Null } catch {}
 </powershell>
