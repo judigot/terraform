@@ -171,6 +171,12 @@ function Setup-CursorSettings {
         $url = "$baseUrl/$($file.UrlName)"
         Download-WorkspaceFile -Url $url -Path $file.Path
     }
+
+    $settingsJsoncPath = Join-Path $cursorUserDir "settings.jsonc"
+    $settingsJsonPath = Join-Path $cursorUserDir "settings.json"
+    if (Test-Path $settingsJsoncPath) {
+        Copy-Item -Path $settingsJsoncPath -Destination $settingsJsonPath -Force
+    }
 }
 
 function Setup-WorkFolder {
