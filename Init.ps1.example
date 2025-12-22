@@ -110,8 +110,8 @@ function Download-WorkspaceFile {
 function Setup-SshKeys {
     $sshDir = Ensure-SshDirectory
 
-    $personalPrivatePath = Join-Path $sshDir "id_ed25519_personal"
-    $personalPublicPath = Join-Path $sshDir "id_ed25519_personal.pub"
+    $personalPrivatePath = Join-Path $sshDir "id_ed25519"
+    $personalPublicPath = Join-Path $sshDir "id_ed25519.pub"
     $workPrivatePath = Join-Path $sshDir "id_ed25519_work"
     $workPublicPath = Join-Path $sshDir "id_ed25519_work.pub"
 
