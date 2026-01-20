@@ -30,7 +30,7 @@ resource "aws_instance" "app_server" {
   # connection {
   #   type        = "ssh"
   #   user        = var.username
-  #   private_key = file("~/.ssh/${var.ssh_key_name}")
+  #   private_key = var.ssh_private_key
   #   host        = self.public_ip
   # }
 
@@ -45,34 +45,34 @@ resource "aws_instance" "app_server" {
   #==========PROJECT BOOTSTRAPPING==========#
 }
 
-# Waits for Nginx to be available before proceeding
-resource "null_resource" "post_build" {
-  count = var.os == "windows" ? 0 : 1
-  depends_on = [aws_instance.app_server]
+# # Waits for Nginx to be available before proceeding
+# resource "null_resource" "post_build" {
+#   count = var.os == "windows" ? 0 : 1
+#   depends_on = [aws_instance.app_server]
 
-  # connection {
-  #   type        = "ssh"
-  #   user        = var.username
-  #   private_key = file("~/.ssh/${var.ssh_key_name}")
-  #   host        = aws_instance.app_server.public_ip
-  # }
-  provisioner "file" {
-    source      = "${path.module}/${var.initial_script}.sh"
-    destination = "/home/ubuntu/${var.initial_script}.sh"
-  }
-  provisioner "file" {
-    source      = "${path.module}/app"
-    destination = "/home/ubuntu/app"
-  }
-  provisioner "remote-exec" {
-    on_failure = continue
+#   connection {
+#     type        = "ssh"
+#     user        = var.username
+#     private_key = var.ssh_private_key
+#     host        = aws_instance.app_server.public_ip
+#   }
+#   provisioner "file" {
+#     source      = "${path.module}/${var.initial_script}.sh"
+#     destination = "/home/ubuntu/${var.initial_script}.sh"
+#   }
+#   provisioner "file" {
+#     source      = "${path.module}/app"
+#     destination = "/home/ubuntu/app"
+#   }
+#   provisioner "remote-exec" {
+#     on_failure = continue
 
-    inline = [
-      "cd /home/ubuntu",
-      "sh ${var.initial_script}.sh"
-    ]
-  }
-}
+#     inline = [
+#       "cd /home/ubuntu",
+#       "sh ${var.initial_script}.sh"
+#     ]
+#   }
+# }
 
 # # Waits for Windows password to be available before proceeding
 # resource "null_resource" "post_build_windows" {
