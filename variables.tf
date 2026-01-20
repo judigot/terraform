@@ -66,7 +66,7 @@ variable "region" {
 
 variable "ssh_key_name" {
   type    = string
-  default = "aws.pem"
+  default = "id_ed25519_aws"
 }
 
 variable "initial_script" {
@@ -88,6 +88,7 @@ variable "app_ports" {
     5000,  # Flask, Django, Node.js
     8080,  # Tomcat, Spring Boot, Node.js
     8000,  # Laravel, Django, PHP built-in server, Apache Tomcat
+    8001,  # Laravel, Django, PHP built-in server, Apache Tomcat
     3306,  # MySQL, MariaDB
     5432,  # PostgreSQL
     6379,  # Redis

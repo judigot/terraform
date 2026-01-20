@@ -1,0 +1,44 @@
+curl -fsSL https://code-server.dev/install.sh | sh
+
+# Fix: "Unit code-server.service not found" + set password + run code-server as a service (public on :8080)
+
+set -euo pipefail
+
+# 1) Write code-server config (password included)
+mkdir -p "$HOME/.config/code-server"
+cat > "$HOME/.config/code-server/config.yaml" <<'EOF'
+bind-addr: 0.0.0.0:8080
+auth: password
+password: Admin123!
+cert: false
+EOF
+
+# 2) Create systemd service (this fixes "Unit code-server.service not found")
+sudo tee /etc/systemd/system/code-server.service >/dev/null <<'EOF'
+[Unit]
+Description=code-server (VS Code in the browser)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu
+ExecStart=/usr/bin/code-server
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 3) Enable + start
+sudo systemctl daemon-reload
+sudo systemctl enable --now code-server
+
+# 4) Verify
+sudo systemctl status code-server --no-pager
+sudo ss -lntp | grep ':8080' || true
+
+# If it still fails, run:
+# sudo journalctl -u code-server --no-pager -n 120

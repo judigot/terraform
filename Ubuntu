@@ -1,0 +1,109 @@
+# Enable Docker
+sudo usermod -aG docker $USER
+newgrp docker
+sudo systemctl is-enabled docker
+
+#================================
+i
+#================================
+
+# Switch to root user
+sudo -i
+
+# Adds Cursor APT repo + key non-interactively, then installs/updates Cursor.
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+
+# 1) Ensure prereqs
+sudo apt-get update -y
+sudo apt-get install -y ca-certificates curl gnupg
+
+# 2) Add keyring
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL "https://downloads.cursor.com/keys/anysphere.asc" \
+  | gpg --dearmor \
+  | sudo tee /etc/apt/keyrings/cursor.gpg >/dev/null
+sudo chmod 0644 /etc/apt/keyrings/cursor.gpg
+
+# 3) Add repo (single source of truth)
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/cursor.gpg] https://downloads.cursor.com/aptrepo stable main" \
+  | sudo tee /etc/apt/sources.list.d/cursor.list >/dev/null
+
+# 4) Install or upgrade Cursor
+sudo apt-get update -y
+sudo apt-get install -y cursor
+
+# 5) Verify
+command -v cursor >/dev/null && cursor --version || true
+
+
+#===========================
+# Ubuntu GUI (lightweight) + RDP in one go (Ubuntu 24.04)
+# Installs: XFCE desktop + XRDP server
+# Then: enables XRDP, sets XFCE as the session, and restarts services.
+
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+
+sudo apt-get update -y
+sudo apt-get install -y xfce4 xfce4-goodies xrdp dbus-x11
+
+# Start + enable XRDP
+sudo systemctl enable --now xrdp
+
+# Make XRDP start an XFCE session for the current user
+echo "xfce4-session" > "$HOME/.xsession"
+
+# Permissions (sometimes helps with session startup)
+sudo adduser xrdp ssl-cert >/dev/null 2>&1 || true
+
+sudo systemctl restart xrdp
+
+# Show status
+sudo systemctl status xrdp --no-pager
+sudo passwd ubuntu
+# Admin123!
+#===========================
+
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+
+# 1) Ensure the lightweight desktop + XRDP bits are present
+sudo apt-get update -y
+sudo apt-get install -y xfce4 xfce4-goodies xrdp dbus-x11 xorgxrdp
+
+# 2) Force Xfce as the session for the ubuntu user
+sudo bash -lc 'echo "xfce4-session" > /home/ubuntu/.xsession'
+sudo chown ubuntu:ubuntu /home/ubuntu/.xsession
+sudo chmod 0644 /home/ubuntu/.xsession
+
+# 3) Make XRDP prefer Xfce at the system level too (helps when Xsession chooses GNOME)
+# Backup first
+sudo cp -a /etc/xrdp/startwm.sh "/etc/xrdp/startwm.sh.bak.$(date +%s)"
+
+# Replace the last exec-to-Xsession with startxfce4
+# (If the exact line differs, the backup lets you revert safely.)
+sudo sed -i 's|^test -x /etc/X11/Xsession && exec /etc/X11/Xsession$|# test -x /etc/X11/Xsession && exec /etc/X11/Xsession\nstartxfce4|g' /etc/xrdp/startwm.sh
+
+# 4) Restart services
+sudo systemctl restart xrdp xrdp-sesman
+sudo systemctl status xrdp --no-pager
+
+# Setup ssh keys
+
+# Download workspace files
+DESKTOP_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
+BASE_URL="https://raw.githubusercontent.com/judigot/references/main"
+
+if [ ! -d "$DESKTOP_DIR" ]; then
+  mkdir -p "$DESKTOP_DIR"
+fi
+
+curl -fsSL "$BASE_URL/Personal.code-workspace" -o "$DESKTOP_DIR/Personal.code-workspace"
+curl -fsSL "$BASE_URL/Work.code-workspace" -o "$DESKTOP_DIR/Work.code-workspace"
+
+
+
+# ~/.config/Cursor/User/settings.json
+
+git clone git@github.com:judestp/jtb-monorepo.git

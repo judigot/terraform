@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "./Personal"
+    }
+  ],
+  "settings": {
+    "terminal.integrated.profiles.linux": {
+      "bash": {
+        "path": "/bin/bash",
+        "args": ["--login", "-c", "DEFAULT_KEY=\"$HOME/.ssh/id_ed25519\"; if [ -f \"$DEFAULT_KEY\" ]; then ssh-add \"$DEFAULT_KEY\" 2>/dev/null; fi; exec bash"]
+      }
+    },
+    "terminal.integrated.defaultProfile.linux": "bash"
+  }
+}

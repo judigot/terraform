@@ -46,10 +46,10 @@ generate_github_ssh() {
 generate_aws_pem() {
     echo "Generating AWS PEM key..."
     mkdir -p ~/.ssh
-    ssh-keygen -t rsa -b 2048 -m PEM -f ~/.ssh/aws.pem -P ""
-    ssh-keygen -y -f ~/.ssh/aws.pem > ~/.ssh/aws.pem.pub
-    chmod 600 ~/.ssh/aws.pem
-    echo "Generated ~/.ssh/aws.pem and ~/.ssh/aws.pem.pub"
+    ssh-keygen -t rsa -b 2048 -m PEM -f ~/.ssh/id_ed25519_aws -P ""
+    ssh-keygen -y -f ~/.ssh/id_ed25519_aws > ~/.ssh/id_ed25519_aws.pub
+    chmod 600 ~/.ssh/id_ed25519_aws
+    echo "Generated ~/.ssh/id_ed25519_aws and ~/.ssh/id_ed25519_aws.pub"
 }
 
 setup_aws_credentials_stub() {
