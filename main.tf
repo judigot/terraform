@@ -109,25 +109,25 @@ resource "aws_instance" "app_server" {
 #   }
 # }
 
-resource "null_resource" "setup_ssh_config" {
-  # Ensures this runs after the EIP is associated
-  depends_on = [aws_instance.app_server]
+# resource "null_resource" "setup_ssh_config" {
+#   # Ensures this runs after the EIP is associated
+#   depends_on = [aws_instance.app_server]
 
-  # Optionally, use triggers to control when the provisioner should run
-  triggers = {
-    ip_address = aws_instance.app_server.public_ip
-  }
+#   # Optionally, use triggers to control when the provisioner should run
+#   triggers = {
+#     ip_address = aws_instance.app_server.public_ip
+#   }
 
-  provisioner "local-exec" {
-    command = templatefile(data.external.os_check.result["is_windows"] == "true" ? "ssh-config-windows.tpl" : "ssh-config-mac-linux.tpl", {
-      hostname     = aws_instance.app_server.public_ip,
-      user         = var.username,
-      identityfile = "~/.ssh/${var.ssh_key_name}"
-    })
+#   provisioner "local-exec" {
+#     command = templatefile(data.external.os_check.result["is_windows"] == "true" ? "ssh-config-windows.tpl" : "ssh-config-mac-linux.tpl", {
+#       hostname     = aws_instance.app_server.public_ip,
+#       user         = var.username,
+#       identityfile = "~/.ssh/${var.ssh_key_name}"
+#     })
 
-    interpreter = data.external.os_check.result["is_windows"] == "true" ? ["powershell", "-Command"] : ["bash", "-c"]
-  }
-}
+#     interpreter = data.external.os_check.result["is_windows"] == "true" ? ["powershell", "-Command"] : ["bash", "-c"]
+#   }
+# }
 
 # resource "null_resource" "open_instance_in_vs_code" {
 #   # Ensures this runs after the EIP is associated
