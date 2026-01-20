@@ -1,6 +1,6 @@
 resource "aws_key_pair" "auth" {
   key_name   = var.ssh_key_name
-  public_key = file("~/.ssh/${var.ssh_key_name}.pub")
+  public_key = var.ssh_public_key
 }
 
 resource "aws_instance" "app_server" {

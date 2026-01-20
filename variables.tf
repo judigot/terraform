@@ -1,3 +1,8 @@
+variable "ssh_public_key" {
+  type      = string
+  sensitive = true
+}
+
 variable "windows_admin_password" {
   description = "The password to set for the Windows Administrator account."
   type        = string
