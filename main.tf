@@ -27,12 +27,12 @@ resource "aws_instance" "app_server" {
     "Name" = "App Server"
   }
 
-  connection {
-    type        = "ssh"
-    user        = var.username
-    private_key = file("~/.ssh/${var.ssh_key_name}")
-    host        = self.public_ip
-  }
+  # connection {
+  #   type        = "ssh"
+  #   user        = var.username
+  #   private_key = file("~/.ssh/${var.ssh_key_name}")
+  #   host        = self.public_ip
+  # }
 
   #==========PROJECT BOOTSTRAPPING==========#
   user_data_base64 = var.os == "windows" ? base64encode(templatefile("${path.module}/init.windows.ps1", {
@@ -50,12 +50,12 @@ resource "null_resource" "post_build" {
   count = var.os == "windows" ? 0 : 1
   depends_on = [aws_instance.app_server]
 
-  connection {
-    type        = "ssh"
-    user        = var.username
-    private_key = file("~/.ssh/${var.ssh_key_name}")
-    host        = aws_instance.app_server.public_ip
-  }
+  # connection {
+  #   type        = "ssh"
+  #   user        = var.username
+  #   private_key = file("~/.ssh/${var.ssh_key_name}")
+  #   host        = aws_instance.app_server.public_ip
+  # }
   provisioner "file" {
     source      = "${path.module}/${var.initial_script}.sh"
     destination = "/home/ubuntu/${var.initial_script}.sh"
