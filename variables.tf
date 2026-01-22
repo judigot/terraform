@@ -71,7 +71,7 @@ variable "region" {
 
 variable "ssh_key_name" {
   type    = string
-  default = "id_ed25519_aws"
+  default = "id_ed25519"
 }
 
 variable "initial_script" {

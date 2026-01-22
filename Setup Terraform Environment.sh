@@ -5,7 +5,6 @@ main() {
     install_aws_cli
     install_terraform
     generate_github_ssh
-    generate_aws_pem
     setup_aws_credentials_stub
     run_terraform_init
 }
@@ -41,15 +40,6 @@ generate_github_ssh() {
     echo "Generating GitHub SSH key..."
     mkdir -p ~/.ssh
     ssh-keygen -t rsa -f ~/.ssh/id_rsa -P "" && chmod 600 ~/.ssh/id_rsa && clear && echo -e "Copy and paste the public key below to your GitHub account:\n\n\e[32m$(cat ~/.ssh/id_rsa.pub) \e[0m\n" # Green
-}
-
-generate_aws_pem() {
-    echo "Generating AWS PEM key..."
-    mkdir -p ~/.ssh
-    ssh-keygen -t rsa -b 2048 -m PEM -f ~/.ssh/id_ed25519_aws -P ""
-    ssh-keygen -y -f ~/.ssh/id_ed25519_aws > ~/.ssh/id_ed25519_aws.pub
-    chmod 600 ~/.ssh/id_ed25519_aws
-    echo "Generated ~/.ssh/id_ed25519_aws and ~/.ssh/id_ed25519_aws.pub"
 }
 
 setup_aws_credentials_stub() {
