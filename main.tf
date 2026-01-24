@@ -1,14 +1,16 @@
 resource "aws_key_pair" "auth" {
+  count      = var.enable_ec2 ? 1 : 0
   key_name   = var.ssh_key_name
   public_key = var.ssh_public_key
 }
 
 resource "aws_instance" "app_server" {
+  count         = var.enable_ec2 ? 1 : 0
   ami           = data.aws_ami.server_os.id
   instance_type = var.instance_type
 
   # SSH Key
-  key_name = aws_key_pair.auth.key_name # ID/Keyname
+  key_name = aws_key_pair.auth[0].key_name # ID/Keyname
 
   # Security Group
   vpc_security_group_ids = [aws_security_group.sg.id]
@@ -18,8 +20,8 @@ resource "aws_instance" "app_server" {
 
   # Override the default drive size
   root_block_device {
-    volume_type = var.volume_type
-    volume_size = var.disk_size # GB
+    volume_type           = var.volume_type
+    volume_size           = var.disk_size # GB
     delete_on_termination = true
   }
 
@@ -39,9 +41,9 @@ resource "aws_instance" "app_server" {
     windows_admin_password = var.windows_admin_password
     init_ps1_url           = data.external.init_ps1_presign.result.url
   })) : null
-  
+
   # user_data_base64 = var.os == "windows" ? base64encode(templatefile("${path.module}/init.windows.ps1", { windows_admin_password = var.windows_admin_password })) : null
-  user_data        = var.os != "windows" ? file("install.sh") : null
+  user_data = var.os != "windows" ? file("install.sh") : null
   #==========PROJECT BOOTSTRAPPING==========#
 }
 

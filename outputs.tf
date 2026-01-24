@@ -1,9 +1,9 @@
 output "dev_ip" {
-  value = aws_instance.app_server.public_ip
+  value = length(aws_instance.app_server) > 0 ? aws_instance.app_server[0].public_ip : null
 }
 
 output "ssh_command" {
-  value = "ssh -i ~/.ssh/${var.ssh_key_name} -o StrictHostKeyChecking=no ${var.username}@${aws_instance.app_server.public_ip}"
+  value = length(aws_instance.app_server) > 0 ? "ssh -i ~/.ssh/${var.ssh_key_name} -o StrictHostKeyChecking=no ${var.username}@${aws_instance.app_server[0].public_ip}" : null
 }
 
 output "db_endpoint" {
@@ -19,7 +19,7 @@ output "db_username" {
 output "db_password" {
   description = "The password for the RDS database"
   value       = var.create_database ? var.db_password : ""
-  sensitive   = true  # Prevents the password from being shown in plain text in the output
+  sensitive   = true # Prevents the password from being shown in plain text in the output
 }
 
 output "db_port" {

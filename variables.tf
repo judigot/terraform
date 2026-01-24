@@ -3,6 +3,12 @@ variable "ssh_public_key" {
   sensitive = true
 }
 
+variable "enable_ec2" {
+  description = "Enable or disable the EC2 app server"
+  type        = bool
+  default     = false
+}
+
 variable "windows_admin_password" {
   description = "The password to set for the Windows Administrator account."
   type        = string
@@ -20,20 +26,20 @@ Create these files to override the default variables:
 variable "db_name" {
   description = "Database name"
   type        = string
-  default = "app_db"
+  default     = "app_db"
 }
 
 variable "db_username" {
   description = "Database username"
   type        = string
-  default = "root"
+  default     = "root"
 }
 
 variable "db_password" {
   description = "Database password"
   type        = string
-  default = "password"
-  sensitive   = true  # Mark this variable as sensitive to avoid accidental exposure
+  default     = "password"
+  sensitive   = true # Mark this variable as sensitive to avoid accidental exposure
 }
 
 variable "instance_type" {
@@ -59,7 +65,7 @@ variable "username" {
 }
 
 variable "region" {
-  type    = string
+  type = string
 
   # default = "us-east-1" # N. Virginia
   default = "us-east-2" # Ohio
@@ -88,7 +94,7 @@ variable "create_database" {
 variable "app_ports" {
   description = "List of ports to allow for the applications"
   type        = list(number)
-  default     = [
+  default = [
     3000,  # Node.js, React, Express.js
     5000,  # Flask, Django, Node.js
     8080,  # Tomcat, Spring Boot, Node.js
