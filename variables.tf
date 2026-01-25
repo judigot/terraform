@@ -44,7 +44,8 @@ variable "db_password" {
 
 variable "instance_type" {
   type    = string
-  default = "t2.micro"
+  default = "c5ad.large"
+  # default = "t2.micro"
 }
 
 variable "disk_size" {
