@@ -2,6 +2,7 @@
 # "main" is for terraform reference only and noy used anywhere in AWS
 
 resource "aws_vpc" "main" {
+  count                = var.enable_ec2 ? 1 : 0
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
@@ -12,7 +13,8 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = aws_vpc.main.id // Attach IGW to the VPC for internet access.
+  count  = var.enable_ec2 ? 1 : 0
+  vpc_id = aws_vpc.main[0].id // Attach IGW to the VPC for internet access.
 
   tags = {
     Name = "dev-igw"
@@ -20,11 +22,12 @@ resource "aws_internet_gateway" "internet_gateway" {
 }
 
 resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.main.id // Associate the route table with our VPC.
+  count  = var.enable_ec2 ? 1 : 0
+  vpc_id = aws_vpc.main[0].id // Associate the route table with our VPC.
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway.id // Directs traffic to the IGW.
+    gateway_id = aws_internet_gateway.internet_gateway[0].id // Directs traffic to the IGW.
   }
 
   tags = {
@@ -33,7 +36,8 @@ resource "aws_route_table" "public_rt" {
 }
 
 resource "aws_subnet" "public_subnet_1" {
-  vpc_id                  = aws_vpc.main.id
+  count                   = var.enable_ec2 ? 1 : 0
+  vpc_id                  = aws_vpc.main[0].id
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "${var.region}a" // Specify AZ if needed, uncomment as necessary.
@@ -45,12 +49,14 @@ resource "aws_subnet" "public_subnet_1" {
 
 # Associate the custom route table with our public subnets to enable internet access.
 resource "aws_route_table_association" "public_rt_assoc_1" {
-  subnet_id      = aws_subnet.public_subnet_1.id
-  route_table_id = aws_route_table.public_rt.id // Links Subnet 1 with our route table.
+  count          = var.enable_ec2 ? 1 : 0
+  subnet_id      = aws_subnet.public_subnet_1[0].id
+  route_table_id = aws_route_table.public_rt[0].id // Links Subnet 1 with our route table.
 }
 
 resource "aws_subnet" "public_subnet_2" {
-  vpc_id                  = aws_vpc.main.id
+  count                   = var.enable_ec2 ? 1 : 0
+  vpc_id                  = aws_vpc.main[0].id
   cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "${var.region}b" // Specify AZ if needed, uncomment as necessary.
@@ -61,13 +67,14 @@ resource "aws_subnet" "public_subnet_2" {
 }
 
 resource "aws_route_table_association" "public_rt_assoc_2" {
-  subnet_id      = aws_subnet.public_subnet_2.id
-  route_table_id = aws_route_table.public_rt.id // Links Subnet 2 with our route table.
+  count          = var.enable_ec2 ? 1 : 0
+  subnet_id      = aws_subnet.public_subnet_2[0].id
+  route_table_id = aws_route_table.public_rt[0].id // Links Subnet 2 with our route table.
 }
 
 resource "aws_security_group" "sg" {
   count       = var.enable_ec2 ? 1 : 0
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = aws_vpc.main[0].id
   name        = "App Security Group" # Optional
   description = "App security group"
 

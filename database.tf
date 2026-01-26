@@ -1,7 +1,7 @@
 resource "aws_db_subnet_group" "db_subnet_group" {
   count      = var.create_database ? 1 : 0
   name       = "database_subnet_group"
-  subnet_ids = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id] // Groups our subnets for the RDS instance.
+  subnet_ids = [aws_subnet.public_subnet_1[0].id, aws_subnet.public_subnet_2[0].id] // Groups our subnets for the RDS instance.
 
   tags = {
     Name = "Database subnet group"
@@ -12,7 +12,7 @@ resource "aws_security_group" "rds_sg" {
   count       = var.create_database ? 1 : 0
   name        = "Database Security Group" # Optional
   description = "Database security group"
-  vpc_id      = aws_vpc.main.id // Ensure the SG is within our VPC.
+  vpc_id      = aws_vpc.main[0].id // Ensure the SG is within our VPC.
 
   ingress {
     from_port = 5432
