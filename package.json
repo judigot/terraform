@@ -11,6 +11,7 @@
 		"start": "dotenv -- terraform apply -auto-approve -var-file env.production.tfvars -var enable_ec2=true && bun run wait-nginx",
 		"start:db": "dotenv -- terraform apply -auto-approve -var-file env.production.tfvars -var enable_ec2=true -var create_database=true && bun run wait-nginx",
 		"windows": "dotenv -- terraform apply -auto-approve -var-file env.windows.tfvars -var enable_ec2=true -var 'os=windows'",
+		"test": "terraform test",
 		"plan": "dotenv -- terraform plan",
 		"destroy": "dotenv -- terraform destroy -auto-approve",
 		"validate": "terraform validate",
