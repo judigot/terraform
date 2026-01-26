@@ -12,7 +12,15 @@
 		"windows": "dotenv -- terraform apply -auto-approve -var-file env.windows.tfvars -var enable_ec2=true -var 'os=windows'",
 		"plan": "dotenv -- terraform plan",
 		"destroy": "dotenv -- terraform destroy -auto-approve",
-		"connect": "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ubuntu@$(terraform output -raw dev_ip)"
+		"validate": "terraform validate",
+		"fmt": "terraform fmt",
+		"output": "terraform output",
+		"ip": "terraform output -raw dev_ip",
+		"connect": "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ubuntu@$(terraform output -raw dev_ip)",
+		"logs": "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ubuntu@$(terraform output -raw dev_ip) 'sudo cat /var/log/cloud-init-output.log'",
+		"status": "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ubuntu@$(terraform output -raw dev_ip) 'cloud-init status --long'",
+		"docker": "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ubuntu@$(terraform output -raw dev_ip) 'docker ps -a'",
+		"nginx": "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ubuntu@$(terraform output -raw dev_ip) 'sudo systemctl status nginx --no-pager'"
 	},
 	"keywords": [],
 	"author": "",
