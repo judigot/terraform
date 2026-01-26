@@ -37,13 +37,13 @@ resource "aws_instance" "app_server" {
   # }
 
   #==========PROJECT BOOTSTRAPPING==========#
-  user_data_base64 = var.os == "windows" ? base64encode(templatefile("${path.module}/init.windows.ps1", {
+  user_data_base64 = var.os == "windows" ? base64encode(templatefile("${path.module}/templates/init.windows.ps1", {
     windows_admin_password = var.windows_admin_password
     init_ps1_url           = data.external.init_ps1_presign.result.url
   })) : null
 
-  # user_data_base64 = var.os == "windows" ? base64encode(templatefile("${path.module}/init.windows.ps1", { windows_admin_password = var.windows_admin_password })) : null
-  user_data = var.os != "windows" ? file("install.sh") : null
+  # user_data_base64 = var.os == "windows" ? base64encode(templatefile("${path.module}/templates/init.windows.ps1", { windows_admin_password = var.windows_admin_password })) : null
+  user_data = var.os != "windows" ? file("${path.module}/scripts/install.sh") : null
   #==========PROJECT BOOTSTRAPPING==========#
 }
 
@@ -59,7 +59,7 @@ resource "aws_instance" "app_server" {
 #     host        = aws_instance.app_server.public_ip
 #   }
 #   provisioner "file" {
-#     source      = "${path.module}/${var.initial_script}.sh"
+#     source      = "${path.module}/scripts/${var.initial_script}.sh"
 #     destination = "/home/ubuntu/${var.initial_script}.sh"
 #   }
 #   provisioner "file" {
@@ -121,7 +121,7 @@ resource "aws_instance" "app_server" {
 #   }
 
 #   provisioner "local-exec" {
-#     command = templatefile(data.external.os_check.result["is_windows"] == "true" ? "ssh-config-windows.tpl" : "ssh-config-mac-linux.tpl", {
+#     command = templatefile(data.external.os_check.result["is_windows"] == "true" ? "${path.module}/templates/ssh-config-windows.tpl" : "${path.module}/templates/ssh-config-mac-linux.tpl", {
 #       hostname     = aws_instance.app_server.public_ip,
 #       user         = var.username,
 #       identityfile = "~/.ssh/${var.ssh_key_name}"

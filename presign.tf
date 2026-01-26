@@ -1,7 +1,7 @@
 data "external" "init_ps1_presign" {
   program = [
     "sh",
-    "${path.module}/presign-init.sh",
+    "${path.module}/scripts/presign-init.sh",
     aws_s3_bucket.bootstrap.bucket,
     "Init.ps1",
     var.region,
