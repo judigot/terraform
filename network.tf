@@ -1,7 +1,13 @@
 # Create a VPC (Virtual Private Cloud)
 # "main" is for terraform reference only and noy used anywhere in AWS
 
+locals {
+  # Create networking resources if either EC2 or database is enabled
+  create_networking = var.enable_ec2 || var.create_database
+}
+
 resource "aws_vpc" "main" {
+  count                = local.create_networking ? 1 : 0
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
@@ -12,7 +18,8 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = aws_vpc.main.id // Attach IGW to the VPC for internet access.
+  count  = local.create_networking ? 1 : 0
+  vpc_id = aws_vpc.main[0].id // Attach IGW to the VPC for internet access.
 
   tags = {
     Name = "dev-igw"
@@ -20,11 +27,12 @@ resource "aws_internet_gateway" "internet_gateway" {
 }
 
 resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.main.id // Associate the route table with our VPC.
+  count  = local.create_networking ? 1 : 0
+  vpc_id = aws_vpc.main[0].id // Associate the route table with our VPC.
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway.id // Directs traffic to the IGW.
+    gateway_id = aws_internet_gateway.internet_gateway[0].id // Directs traffic to the IGW.
   }
 
   tags = {
@@ -33,7 +41,8 @@ resource "aws_route_table" "public_rt" {
 }
 
 resource "aws_subnet" "public_subnet_1" {
-  vpc_id                  = aws_vpc.main.id
+  count                   = local.create_networking ? 1 : 0
+  vpc_id                  = aws_vpc.main[0].id
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "${var.region}a" // Specify AZ if needed, uncomment as necessary.
@@ -45,12 +54,14 @@ resource "aws_subnet" "public_subnet_1" {
 
 # Associate the custom route table with our public subnets to enable internet access.
 resource "aws_route_table_association" "public_rt_assoc_1" {
-  subnet_id      = aws_subnet.public_subnet_1.id
-  route_table_id = aws_route_table.public_rt.id // Links Subnet 1 with our route table.
+  count          = local.create_networking ? 1 : 0
+  subnet_id      = aws_subnet.public_subnet_1[0].id
+  route_table_id = aws_route_table.public_rt[0].id // Links Subnet 1 with our route table.
 }
 
 resource "aws_subnet" "public_subnet_2" {
-  vpc_id                  = aws_vpc.main.id
+  count                   = local.create_networking ? 1 : 0
+  vpc_id                  = aws_vpc.main[0].id
   cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = true
   availability_zone       = "${var.region}b" // Specify AZ if needed, uncomment as necessary.
@@ -61,12 +72,14 @@ resource "aws_subnet" "public_subnet_2" {
 }
 
 resource "aws_route_table_association" "public_rt_assoc_2" {
-  subnet_id      = aws_subnet.public_subnet_2.id
-  route_table_id = aws_route_table.public_rt.id // Links Subnet 2 with our route table.
+  count          = local.create_networking ? 1 : 0
+  subnet_id      = aws_subnet.public_subnet_2[0].id
+  route_table_id = aws_route_table.public_rt[0].id // Links Subnet 2 with our route table.
 }
 
 resource "aws_security_group" "sg" {
-  vpc_id = aws_vpc.main.id
+  count       = var.enable_ec2 ? 1 : 0
+  vpc_id      = aws_vpc.main[0].id
   name        = "App Security Group" # Optional
   description = "App security group"
 
@@ -74,12 +87,12 @@ resource "aws_security_group" "sg" {
     from_port        = 22
     to_port          = 22
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]  # Replace with your IP/range
+    cidr_blocks      = ["0.0.0.0/0"] # Replace with your IP/range
     self             = false
     description      = "SSH: Allow SSH access from any IP address. For security reasons, consider restricting this to known IP addresses or ranges." # Required
-    security_groups  = []    # Required
-    ipv6_cidr_blocks = []    # Required
-    prefix_list_ids  = []    # Required
+    security_groups  = []                                                                                                                            # Required
+    ipv6_cidr_blocks = []                                                                                                                            # Required
+    prefix_list_ids  = []                                                                                                                            # Required
   }
 
   ingress {
@@ -89,9 +102,9 @@ resource "aws_security_group" "sg" {
     cidr_blocks      = ["0.0.0.0/0"]
     self             = false
     description      = "HTTP: Allow HTTP traffic from any IP address."
-    security_groups  = []    # Required
-    ipv6_cidr_blocks = []    # Required
-    prefix_list_ids  = []    # Required
+    security_groups  = [] # Required
+    ipv6_cidr_blocks = [] # Required
+    prefix_list_ids  = [] # Required
   }
 
   ingress {
@@ -101,33 +114,33 @@ resource "aws_security_group" "sg" {
     cidr_blocks      = ["0.0.0.0/0"]
     self             = false
     description      = "HTTPS: Allow HTTPS traffic from any IP address."
-    security_groups  = []    # Required
-    ipv6_cidr_blocks = []    # Required
-    prefix_list_ids  = []    # Required
+    security_groups  = [] # Required
+    ipv6_cidr_blocks = [] # Required
+    prefix_list_ids  = [] # Required
   }
 
   # Windows only
   ingress {
-    from_port   = 3389          # RDP port
-    to_port     = 3389          # RDP port
+    from_port   = 3389 # RDP port
+    to_port     = 3389 # RDP port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Open to all IPs (not recommended for production). Replace with your IP, e.g., "YOUR_PUBLIC_IP/32"
-    description      = "Allow Windows Remote Desktop Protocol (RDP)"
+    description = "Allow Windows Remote Desktop Protocol (RDP)"
   }
 
   # Dynamic ingress rule for allowing application ports (see "app_ports" in variables.tf)
   dynamic "ingress" {
     for_each = var.app_ports
     content {
-      from_port   = ingress.value
-      to_port     = ingress.value
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from anywhere (adjust as needed)
-      self        = false
-      description = "Allow access to application on port ${ingress.value}"
-      security_groups  = []    # Required
-      ipv6_cidr_blocks = []    # Required
-      prefix_list_ids  = []    # Required
+      from_port        = ingress.value
+      to_port          = ingress.value
+      protocol         = "tcp"
+      cidr_blocks      = ["0.0.0.0/0"] # Allow traffic from anywhere (adjust as needed)
+      self             = false
+      description      = "Allow access to application on port ${ingress.value}"
+      security_groups  = [] # Required
+      ipv6_cidr_blocks = [] # Required
+      prefix_list_ids  = [] # Required
     }
   }
 

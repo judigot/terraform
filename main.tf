@@ -13,10 +13,10 @@ resource "aws_instance" "app_server" {
   key_name = aws_key_pair.auth[0].key_name # ID/Keyname
 
   # Security Group
-  vpc_security_group_ids = [aws_security_group.sg.id]
+  vpc_security_group_ids = [aws_security_group.sg[0].id]
 
   # Subnet ID
-  subnet_id = aws_subnet.public_subnet_1.id
+  subnet_id = aws_subnet.public_subnet_1[0].id
 
   # Override the default drive size
   root_block_device {

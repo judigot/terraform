@@ -1,7 +1,7 @@
 resource "aws_db_subnet_group" "db_subnet_group" {
-  count = var.create_database ? 1 : 0
+  count      = var.create_database ? 1 : 0
   name       = "database_subnet_group"
-  subnet_ids = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id] // Groups our subnets for the RDS instance.
+  subnet_ids = [aws_subnet.public_subnet_1[0].id, aws_subnet.public_subnet_2[0].id] // Groups our subnets for the RDS instance.
 
   tags = {
     Name = "Database subnet group"
@@ -9,15 +9,15 @@ resource "aws_db_subnet_group" "db_subnet_group" {
 }
 
 resource "aws_security_group" "rds_sg" {
-  count = var.create_database ? 1 : 0
+  count       = var.create_database ? 1 : 0
   name        = "Database Security Group" # Optional
   description = "Database security group"
-  vpc_id      = aws_vpc.main.id  // Ensure the SG is within our VPC.
+  vpc_id      = aws_vpc.main[0].id // Ensure the SG is within our VPC.
 
   ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
+    from_port = 5432
+    to_port   = 5432
+    protocol  = "tcp"
     cidr_blocks = [
       "0.0.0.0/0",  // Allow database access from anywhere (consider narrowing this for production).
       "10.0.2.0/32" // Also allow from a specific internal subnet for direct access.
@@ -28,7 +28,7 @@ resource "aws_security_group" "rds_sg" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]  // Permit all outbound traffic from the RDS.
+    cidr_blocks = ["0.0.0.0/0"] // Permit all outbound traffic from the RDS.
   }
 
   tags = {
@@ -37,28 +37,28 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_db_instance" "database" {
-  count = var.create_database ? 1 : 0
-  identifier              = "postgres"
-  engine                  = "postgres"
-  engine_version          = "16.3"
+  count          = var.create_database ? 1 : 0
+  identifier     = "postgres"
+  engine         = "postgres"
+  engine_version = "16.3"
 
   # identifier              = "mysql"
   # engine                  = "mysql"
   # engine_version          = "8"
 
-  db_name                 = var.db_name
-  username                = var.db_username
-  password                = var.db_password
-  allocated_storage       = 20
-  max_allocated_storage   = 100     # Enables storage autoscaling as needed.
+  db_name               = var.db_name
+  username              = var.db_username
+  password              = var.db_password
+  allocated_storage     = 20
+  max_allocated_storage = 100 # Enables storage autoscaling as needed.
 
-  storage_type            = "gp3"  // Utilizes SSD storage for better performance.
-  instance_class          = "db.r5.large"
-  multi_az                = false  // Consider setting to true for production for higher availability.
-  vpc_security_group_ids  = [aws_security_group.rds_sg[count.index].id]  // Applies our SG to the RDS instance.
-  db_subnet_group_name    = aws_db_subnet_group.db_subnet_group[count.index].name  // Assigns our DB subnet group.
-  publicly_accessible     = true  // Allows the RDS instance to be accessible from the internet.
-  skip_final_snapshot     = true  // Caution: Skipping final snapshot can lead to data loss on delete.
+  storage_type           = "gp3" // Utilizes SSD storage for better performance.
+  instance_class         = "db.r5.large"
+  multi_az               = false                                                 // Consider setting to true for production for higher availability.
+  vpc_security_group_ids = [aws_security_group.rds_sg[count.index].id]           // Applies our SG to the RDS instance.
+  db_subnet_group_name   = aws_db_subnet_group.db_subnet_group[count.index].name // Assigns our DB subnet group.
+  publicly_accessible    = true                                                  // Allows the RDS instance to be accessible from the internet.
+  skip_final_snapshot    = true                                                  // Caution: Skipping final snapshot can lead to data loss on delete.
 
   tags = {
     Name = "Database"
