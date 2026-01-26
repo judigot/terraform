@@ -5,15 +5,18 @@
   "main": "index.js",
   "scripts": {
     "init": "terraform init",
-    "dev": "terraform apply -auto-approve -var-file env.development.tfvars",
-    "dev:db": "terraform apply -auto-approve -var-file env.development.tfvars -var create_database=true",
-    "start": "terraform apply -auto-approve -var-file env.production.tfvars",
-    "start:db": "terraform apply -auto-approve -var-file env.production.tfvars -var create_database=true",
-    "windows": "terraform apply -auto-approve -var-file env.windows.tfvars -var 'os=windows'",
-    "plan": "terraform plan",
-    "destroy": "terraform destroy -auto-approve"
+    "dev": "dotenv -- terraform apply -auto-approve -var-file env.development.tfvars -var enable_ec2=true",
+    "dev:db": "dotenv -- terraform apply -auto-approve -var-file env.development.tfvars -var enable_ec2=true -var create_database=true",
+    "start": "dotenv -- terraform apply -auto-approve -var-file env.production.tfvars -var enable_ec2=true",
+    "start:db": "dotenv -- terraform apply -auto-approve -var-file env.production.tfvars -var enable_ec2=true -var create_database=true",
+    "windows": "dotenv -- terraform apply -auto-approve -var-file env.windows.tfvars -var enable_ec2=true -var 'os=windows'",
+    "plan": "dotenv -- terraform plan",
+    "destroy": "dotenv -- terraform destroy -auto-approve"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv-cli": "^11.0.0"
+  }
 }
