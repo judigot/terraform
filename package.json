@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"init": "terraform init",
-		"dev": "dotenv -- terraform apply -auto-approve -var-file env.development.tfvars -var enable_ec2=true",
+		"dev": "dotenv -- terraform apply -auto-approve -var-file env.development.tfvars -var enable_ec2=true && echo '\n✅ Infrastructure created! Waiting for nginx...' && ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ubuntu@$(terraform output -raw dev_ip) 'cloud-init status --wait > /dev/null 2>&1 && curl -s http://localhost > /dev/null && echo \"✅ Nginx is up! Visit: http://$(terraform output -raw dev_ip)\"'",
 		"dev:db": "dotenv -- terraform apply -auto-approve -var-file env.development.tfvars -var enable_ec2=true -var create_database=true",
 		"start": "dotenv -- terraform apply -auto-approve -var-file env.production.tfvars -var enable_ec2=true",
 		"start:db": "dotenv -- terraform apply -auto-approve -var-file env.production.tfvars -var enable_ec2=true -var create_database=true",
