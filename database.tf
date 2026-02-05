@@ -1,5 +1,14 @@
+locals {
+  db_engine_port    = var.db_engine == "mysql" ? 3306 : 5432
+  db_identifier     = var.db_engine == "mysql" ? "mysql" : "postgres"
+  db_scheme         = var.db_engine == "mysql" ? "mysql" : "postgresql"
+  db_engine_name    = var.db_engine == "mysql" ? "mysql" : "postgres"
+  create_database   = var.create_database || var.enable_rds
+  db_engine_version = var.db_engine_version != "" ? var.db_engine_version : (var.db_engine == "mysql" ? "8.0" : "16.3")
+}
+
 resource "aws_db_subnet_group" "db_subnet_group" {
-  count      = var.create_database ? 1 : 0
+  count      = local.create_database ? 1 : 0
   name       = "database_subnet_group"
   subnet_ids = [aws_subnet.public_subnet_1[0].id, aws_subnet.public_subnet_2[0].id] // Groups our subnets for the RDS instance.
 
@@ -9,14 +18,14 @@ resource "aws_db_subnet_group" "db_subnet_group" {
 }
 
 resource "aws_security_group" "rds_sg" {
-  count       = var.create_database ? 1 : 0
+  count       = local.create_database ? 1 : 0
   name        = "Database Security Group" # Optional
   description = "Database security group"
   vpc_id      = aws_vpc.main[0].id // Ensure the SG is within our VPC.
 
   ingress {
-    from_port = 5432
-    to_port   = 5432
+    from_port = local.db_engine_port
+    to_port   = local.db_engine_port
     protocol  = "tcp"
     cidr_blocks = [
       "0.0.0.0/0",  // Allow database access from anywhere (consider narrowing this for production).
@@ -37,14 +46,10 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_db_instance" "database" {
-  count          = var.create_database ? 1 : 0
-  identifier     = "postgres"
-  engine         = "postgres"
-  engine_version = "16.3"
-
-  # identifier              = "mysql"
-  # engine                  = "mysql"
-  # engine_version          = "8"
+  count          = local.create_database ? 1 : 0
+  identifier     = local.db_identifier
+  engine         = local.db_engine_name
+  engine_version = var.db_engine_version
 
   db_name               = var.db_name
   username              = var.db_username

@@ -42,6 +42,23 @@ variable "db_password" {
   sensitive   = true # Mark this variable as sensitive to avoid accidental exposure
 }
 
+variable "db_engine" {
+  description = "Database engine (postgresql or mysql)"
+  type        = string
+  default     = "postgresql"
+
+  validation {
+    condition     = contains(["postgresql", "mysql"], var.db_engine)
+    error_message = "db_engine must be either 'postgresql' or 'mysql'."
+  }
+}
+
+variable "db_engine_version" {
+  description = "Database engine version"
+  type        = string
+  default     = ""
+}
+
 variable "instance_type" {
   type    = string
   default = "c5ad.large"
@@ -88,6 +105,12 @@ variable "initial_script" {
 
 variable "create_database" {
   description = "Whether to create the RDS instance"
+  type        = bool
+  default     = false
+}
+
+variable "enable_rds" {
+  description = "Whether to create the RDS instance (legacy toggle)"
   type        = bool
   default     = false
 }
