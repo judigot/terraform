@@ -59,6 +59,17 @@ variable "db_engine_version" {
   default     = ""
 }
 
+variable "custom_ami" {
+  description = "Custom AMI ID to use instead of the catalog search"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.custom_ami == "" || can(regex("^ami-[0-9a-fA-F]+$", var.custom_ami))
+    error_message = "custom_ami must be a valid AMI ID (ami-...) or blank."
+  }
+}
+
 variable "instance_type" {
   type    = string
   default = "c5ad.large"

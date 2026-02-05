@@ -6,7 +6,7 @@ resource "aws_key_pair" "auth" {
 
 resource "aws_instance" "app_server" {
   count         = var.enable_ec2 ? 1 : 0
-  ami           = data.aws_ami.server_os.id
+  ami           = var.custom_ami != "" ? var.custom_ami : data.aws_ami.server_os.id
   instance_type = var.instance_type
 
   # SSH Key
